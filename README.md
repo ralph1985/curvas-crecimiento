@@ -50,7 +50,7 @@ pnpm install --frozen-lockfile --ignore-scripts
 pnpm start
 ```
 
-Abre [http://127.0.0.1:8081](http://127.0.0.1:8081) en el navegador. El servidor de desarrollo se limita a tu equipo y recompila la aplicación al guardar cambios.
+Abre [crecimiento-bebe.conquense.dev](https://crecimiento-bebe.conquense.dev/) en el navegador. El servidor de desarrollo se limita a tu equipo y recompila la aplicación al guardar cambios.
 
 ## Comandos
 
