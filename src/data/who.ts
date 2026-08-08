@@ -461,12 +461,14 @@ const whoHcfaGirls5Years: LineChartData = {
   ],
 };
 
-function options(axisXUnit: string, axisYUnit: string): LineChartOptions {
+function options(_axisXUnit: string, axisYUnit: string): LineChartOptions {
   return {
     lineSmooth: Interpolation.none({fillHoles: true}),
     showPoint: true,
     axisX: {
-      labelInterpolationFnc: val => (val ? `${val} ${axisXUnit}` : null),
+      // Keep the unit in a separate caption. Long labels such as
+      // "12 semanas" collide on narrow screens.
+      labelInterpolationFnc: val => (val ? `${val}` : null),
     },
     axisY: {
       labelInterpolationFnc: val => (val ? `${val} ${axisYUnit}` : null),

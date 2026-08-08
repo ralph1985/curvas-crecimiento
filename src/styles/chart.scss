@@ -6,6 +6,7 @@
 #chart { height: clamp(20rem, 52vh, 36rem); margin-top: 1rem; }
 #chart .ct-label { color: var(--text-muted); fill: var(--text-muted); }
 #chart .ct-grid { stroke: color-mix(in srgb, var(--border) 75%, transparent); }
+.chart-axis-caption { margin: -0.2rem 0 0.75rem; color: var(--text-muted); font-size: 0.78rem; font-weight: 750; text-align: center; }
 .ct-series-a .ct-line, .ct-series-b .ct-line, .ct-series-c .ct-line { stroke-width: 1.35px; }
 .ct-series-a .ct-line { stroke-dasharray: 9px 8px; }
 .ct-series-b .ct-line { stroke-dasharray: 4px 5px; }

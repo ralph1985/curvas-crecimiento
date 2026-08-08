@@ -1,5 +1,6 @@
 import m from 'mithril';
 
+import {ChronoUnit} from '@js-joda/core';
 import {
   LineChart,
   type LineChartData,
@@ -344,6 +345,10 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
         'fieldset',
         m('legend', attrs.config?.label),
         m('div', {id: 'chart'}),
+        m(
+          '.chart-axis-caption',
+          `Edad (${attrs.config?.timeUnit === ChronoUnit.DAYS ? 'semanas' : 'meses'})`,
+        ),
         m(
           'ul',
           {class: 'ct-legend'},
