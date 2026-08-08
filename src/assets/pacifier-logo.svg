@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>Chupete coral</title>
+  <circle cx="64" cy="64" r="58" fill="#ffe8ec"/>
+  <path d="M39 43c0-12 10-22 25-22s25 10 25 22v17H39z" fill="#ee7f8c"/>
+  <circle cx="64" cy="61" r="12" fill="#ffffff"/>
+  <path d="M29 58h70v13c0 8-7 14-15 14H44c-8 0-15-6-15-14z" fill="#ff9aa8"/>
+  <circle cx="35" cy="64" r="7" fill="#42aaa7"/>
+  <circle cx="93" cy="64" r="7" fill="#42aaa7"/>
+  <path d="M49 86h30v13c0 9-7 16-15 16s-15-7-15-16z" fill="#ee7f8c"/>
+  <path d="M54 99h20" stroke="#ffffff" stroke-linecap="round" stroke-width="4"/>
+</svg>
