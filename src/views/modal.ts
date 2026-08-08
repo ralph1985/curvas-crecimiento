@@ -7,7 +7,14 @@ interface ModalAttrs {
   onClose(): void;
 }
 
-const ModalComponent: m.Component<ModalAttrs> = {
+type ModalState = {titleId: string};
+
+let modalInstance = 0;
+
+const ModalComponent: m.Component<ModalAttrs, ModalState> = {
+  oninit({state}) {
+    state.titleId = `modal-title-${++modalInstance}`;
+  },
   oncreate({dom}) {
     const modal = dom as HTMLElement;
     modal.querySelector<HTMLButtonElement>('button')?.focus();
@@ -19,7 +26,7 @@ const ModalComponent: m.Component<ModalAttrs> = {
   },
   view(vnode) {
     const {className, title, kicker, onClose} = vnode.attrs;
-    const titleId = 'modal-title';
+    const {titleId} = vnode.state;
 
     return m(
       '.modal-backdrop',
@@ -40,6 +47,7 @@ const ModalComponent: m.Component<ModalAttrs> = {
           'aria-labelledby': titleId,
           onkeydown: (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
+              event.stopPropagation();
               onClose();
             }
           },

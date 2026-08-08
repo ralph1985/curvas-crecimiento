@@ -69,7 +69,12 @@ o.spec('Child component', () => {
 
     out.click('.child-action');
     out.should.have(1, '.modal-wide');
-    out.should.have(1, '.modal-wide table');
+    out.should.have(1, '.modal-wide .measurement-history-list');
+    out.click('.measurement-summary');
+    out.should.have(2, '[role="dialog"]');
+    out.should.have(1, '.modal-measurement-edit');
+    out.click('.modal-measurement-edit .modal-close');
+    out.should.have(1, '[role="dialog"]');
     out.click('.modal-close');
     out.should.not.have('[role="dialog"]');
   });
@@ -136,5 +141,28 @@ o.spec('Child component', () => {
     o(addedMeasurement?.weight).equals(4.1);
     o(addedMeasurement?.length).equals(undefined);
     o(addedMeasurement?.head).equals(undefined);
+  });
+
+  o('discards measurement edits when the nested modal is cancelled', () => {
+    const originalMeasurement = children[0].measurements[0];
+    const child: Child = {
+      ...children[0],
+      measurements: [{...originalMeasurement}],
+    };
+    const out = mq(ChildComponent, {
+      state: child,
+      actions: stubChildActions,
+    });
+
+    out.click('.child-action');
+    out.click('.measurement-summary');
+    out.setValue('#edit-measurement-weight', '9');
+    out.click('.modal-measurement-edit .button-secondary');
+
+    out.click('.measurement-summary');
+    out.should.have(
+      1,
+      `#edit-measurement-weight[value="${originalMeasurement.weight}"]`,
+    );
   });
 });
