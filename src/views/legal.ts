@@ -1,5 +1,7 @@
 import m from 'mithril';
 
+import ModalComponent from './modal';
+
 export type LegalPageKey =
   | 'aviso-legal'
   | 'politica-privacidad'
@@ -124,21 +126,27 @@ const pages: Record<
   },
 };
 
-const LegalPageComponent: m.Component<{page: LegalPageKey}> = {
-  view: ({attrs: {page}}) => {
+const LegalPageComponent: m.Component<{
+  page: LegalPageKey;
+  onClose(): void;
+}> = {
+  view: ({attrs: {page, onClose}}) => {
     const content = pages[page];
     return m(
-      '.legal-page.app-panel',
-      m('a.legal-back', {href: '#'}, '← Volver a la aplicación'),
-      m('p.eyebrow', 'Información legal'),
-      m('h1', content.title),
-      m('p.panel-intro', content.intro),
+      ModalComponent,
+      {
+        className: 'modal-legal',
+        kicker: 'Información legal',
+        title: content.title,
+        onClose,
+      },
+      m('p.modal-intro', content.intro),
       m(
         '.legal-sections',
         content.sections.map(section =>
           m(
             'section.legal-section',
-            m('h2', section.title),
+            m('h3', section.title),
             section.paragraphs?.map(paragraph => m('p', paragraph)),
             section.list
               ? m(
@@ -149,7 +157,6 @@ const LegalPageComponent: m.Component<{page: LegalPageKey}> = {
           ),
         ),
       ),
-      m('a.legal-back', {href: '#'}, '← Volver a la aplicación'),
     );
   },
 };

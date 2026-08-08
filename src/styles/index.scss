@@ -68,12 +68,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .footer-legal-links a { color: var(--text-muted); font-size: 0.8rem; text-underline-offset: 0.18em; }
 .footer-legal-links a:hover { color: var(--turquoise); }
 .panel-intro { max-width: 62ch; margin-bottom: 1.5rem; }
-.legal-page { max-width: 52rem; margin-inline: auto; }
-.legal-page h1 { margin-bottom: 0.5rem; }
-.legal-back { display: inline-block; margin-bottom: 1.5rem; color: var(--turquoise); font-weight: 750; text-underline-offset: 0.18em; }
+.modal-legal { width: min(100%, 46rem); }
+.modal-intro { margin-top: 0; }
 .legal-sections { display: grid; gap: 1rem; }
-.legal-section { padding: 1.15rem; border: 1px solid var(--border); border-radius: 1.1rem; background: var(--surface); box-shadow: var(--shadow-small); }
-.legal-section h2 { margin: 0 0 0.65rem; font-size: 1.05rem; }
+.legal-section { padding-top: 1rem; border-top: 1px solid var(--border); }
+.legal-section h3 { margin: 0 0 0.65rem; font-size: 1.05rem; }
 .legal-section p { margin: 0 0 0.75rem; }
 .legal-section p:last-child { margin-bottom: 0; }
 .legal-section ul { margin: 0; padding-left: 1.25rem; }

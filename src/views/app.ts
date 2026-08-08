@@ -62,7 +62,12 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
 
   view({attrs: {state, actions}}) {
     if (legalPage) {
-      return m(LegalPageComponent, {page: legalPage});
+      return m(LegalPageComponent, {
+        page: legalPage,
+        onClose: () => {
+          window.location.hash = '';
+        },
+      });
     }
 
     const children = state.children.map((child, idx) => {
