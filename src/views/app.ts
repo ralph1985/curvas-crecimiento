@@ -276,6 +276,17 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
             },
             'Cookies',
           ),
+          m(
+            'a.footer-source-link',
+            {
+              href: 'https://github.com/ralph1985/curvas-crecimiento',
+              target: '_blank',
+              rel: 'noreferrer',
+              'aria-label': 'Código fuente en GitHub',
+            },
+            m('span.github-icon', {'aria-hidden': 'true'}),
+            'Código fuente',
+          ),
         ),
         m(
           'p',

@@ -72,6 +72,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .footer-info-link { margin: 0 0 0.75rem; padding: 0; background: transparent; color: var(--turquoise); font-size: 0.875rem; font-weight: 750; text-decoration: underline; text-underline-offset: 0.18em; }
 .footer-legal-links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem; }
 .footer-legal-links a { color: var(--text-muted); font-size: 0.8rem; text-underline-offset: 0.18em; }
+.footer-source-link { display: inline-flex; align-items: center; gap: 0.35rem; }
+.github-icon { display: inline-block; width: 0.95rem; height: 0.95rem; flex: 0 0 auto; background: currentColor; mask: url('../assets/github-mark.svg') center / contain no-repeat; -webkit-mask: url('../assets/github-mark.svg') center / contain no-repeat; }
 .footer-legal-links a:hover { color: var(--turquoise); }
 .panel-intro { max-width: 62ch; margin-bottom: 1.5rem; }
 .modal-legal { width: min(100%, 46rem); }
