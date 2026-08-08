@@ -346,7 +346,15 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
       return m(
         'fieldset',
         m('legend', attrs.config?.label),
-        m('div', {id: 'chart'}),
+        m(
+          '.chart-plot',
+          m(
+            '.chart-axis-caption-y',
+            {'aria-hidden': 'true'},
+            attrs.config?.axisYUnit,
+          ),
+          m('div', {id: 'chart'}),
+        ),
         m(
           '.chart-axis-caption',
           `Edad (${attrs.config?.timeUnit === ChronoUnit.DAYS ? 'semanas' : 'meses'})`,

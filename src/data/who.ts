@@ -461,7 +461,7 @@ const whoHcfaGirls5Years: LineChartData = {
   ],
 };
 
-function options(_axisXUnit: string, axisYUnit: string): LineChartOptions {
+function options(_axisXUnit: string, _axisYUnit: string): LineChartOptions {
   return {
     lineSmooth: Interpolation.none({fillHoles: true}),
     showPoint: true,
@@ -471,7 +471,8 @@ function options(_axisXUnit: string, axisYUnit: string): LineChartOptions {
       labelInterpolationFnc: val => (val ? `${val}` : null),
     },
     axisY: {
-      labelInterpolationFnc: val => (val ? `${val} ${axisYUnit}` : null),
+      // Keep the unit in the axis caption so it is not repeated on every tick.
+      labelInterpolationFnc: val => (val ? `${val}` : null),
     },
     plugins: [],
   };
@@ -484,6 +485,8 @@ type ChartConfig = {
   data: LineChartData;
   /** Chart options. */
   options: LineChartOptions;
+  /** Unit displayed once beside the Y axis. */
+  axisYUnit: string;
   /** The resolution of the chart as time unit, e.g. "DAYS" if
       up to one measurement per day should be displayed. */
   timeUnit: ChronoUnit;
@@ -504,6 +507,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niños: peso para la edad: del nacimiento a las 13 semanas',
     data: stretchGraph(whoWfaBoys13Weeks, 7),
     options: options('semanas', 'kg'),
+    axisYUnit: 'kg',
     timeUnit: ChronoUnit.DAYS,
     offset: Period.ZERO,
     sex: 'male',
@@ -513,6 +517,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niñas: peso para la edad: del nacimiento a las 13 semanas',
     data: stretchGraph(whoWfaGirls13Weeks, 7),
     options: options('semanas', 'kg'),
+    axisYUnit: 'kg',
     timeUnit: ChronoUnit.DAYS,
     offset: Period.ZERO,
     sex: 'female',
@@ -522,6 +527,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niños: peso para la edad: del nacimiento a los 5 años',
     data: whoWfaBoys5Years,
     options: options('meses', 'kg'),
+    axisYUnit: 'kg',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ZERO,
     sex: 'male',
@@ -531,6 +537,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niñas: peso para la edad: del nacimiento a los 5 años',
     data: whoWfaGirls5Years,
     options: options('meses', 'kg'),
+    axisYUnit: 'kg',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ZERO,
     sex: 'female',
@@ -540,6 +547,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niños: longitud para la edad: del nacimiento a las 13 semanas',
     data: stretchGraph(whoHfaBoys13Weeks, 7),
     options: options('semanas', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.DAYS,
     offset: Period.ZERO,
     sex: 'male',
@@ -549,6 +557,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niñas: longitud para la edad: del nacimiento a las 13 semanas',
     data: stretchGraph(whoHfaGirls13Weeks, 7),
     options: options('semanas', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.DAYS,
     offset: Period.ZERO,
     sex: 'female',
@@ -558,6 +567,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niños: longitud para la edad: del nacimiento a los 2 años',
     data: whoHfaBoys2Years,
     options: options('meses', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ZERO,
     sex: 'male',
@@ -567,6 +577,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niñas: longitud para la edad: del nacimiento a los 2 años',
     data: whoHfaGirls2Years,
     options: options('meses', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ZERO,
     sex: 'female',
@@ -576,6 +587,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niños: longitud para la edad: de 2 a 5 años',
     data: whoHfaBoys5Years,
     options: options('meses', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ofYears(2),
     sex: 'male',
@@ -585,6 +597,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niñas: longitud para la edad: de 2 a 5 años',
     data: whoHfaGirls5Years,
     options: options('meses', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ofYears(2),
     sex: 'female',
@@ -595,6 +608,7 @@ const charts: Dict<ChartConfig> = {
       'Niños: perímetro craneal para la edad: del nacimiento a las 13 semanas',
     data: stretchGraph(whoHcfaBoys13Weeks, 7),
     options: options('semanas', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.DAYS,
     offset: Period.ZERO,
     sex: 'male',
@@ -605,6 +619,7 @@ const charts: Dict<ChartConfig> = {
       'Niñas: perímetro craneal para la edad: del nacimiento a las 13 semanas',
     data: stretchGraph(whoHcfaGirls13Weeks, 7),
     options: options('semanas', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.DAYS,
     offset: Period.ZERO,
     sex: 'female',
@@ -614,6 +629,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niños: perímetro craneal para la edad: del nacimiento a los 5 años',
     data: whoHcfaBoys5Years,
     options: options('meses', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ZERO,
     sex: 'male',
@@ -623,6 +639,7 @@ const charts: Dict<ChartConfig> = {
     label: 'Niñas: perímetro craneal para la edad: del nacimiento a los 5 años',
     data: whoHcfaGirls5Years,
     options: options('meses', 'cm'),
+    axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
     offset: Period.ZERO,
     sex: 'female',
