@@ -172,7 +172,8 @@ td input { min-width: 6.5rem; }
 .measurement-summary-main span { color: var(--text-muted); font-size: 0.8rem; }
 .measurement-summary-values { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; color: var(--text-muted); font-size: 0.86rem; }
 .measurement-summary-values span { white-space: nowrap; }
-.measurement-edit-hint { color: var(--turquoise); font-size: 0.8rem; font-weight: 750; white-space: nowrap; }
+.measurement-edit-hint { display: inline-flex; align-items: center; justify-self: start; gap: 0.3rem; color: var(--turquoise); font-size: 0.8rem; font-weight: 750; text-align: left; white-space: nowrap; }
+.measurement-edit-icon { font-size: 1.05rem; line-height: 1; }
 .measurement-item-actions { display: flex; align-items: center; }
 .modal-measurement-edit { width: min(100%, 34rem); }
 .measurement-edit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -198,7 +199,7 @@ td input { min-width: 6.5rem; }
   .measurement-history-item { grid-template-columns: minmax(0, 1fr) auto; gap: 0.5rem; }
   .measurement-summary { grid-column: 1; grid-template-columns: minmax(6rem, 0.8fr) minmax(0, 1.4fr); gap: 0.25rem 0.65rem; }
   .measurement-summary-values { grid-column: 1 / -1; }
-  .measurement-edit-hint { justify-self: end; }
+  .measurement-edit-hint { justify-self: start; }
   .measurement-edit-grid { grid-template-columns: 1fr; }
 }
 

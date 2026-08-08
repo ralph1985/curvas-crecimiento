@@ -106,14 +106,6 @@ const ChildComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
               onClose: closeMeasurements,
             },
             m(MeasurementTableComponent, {state, actions}),
-            m(
-              '.modal-actions',
-              m(
-                'button.button-secondary',
-                {type: 'button', onclick: closeMeasurements},
-                'Cerrar',
-              ),
-            ),
           )
         : null,
       deletingChildren.has(state)

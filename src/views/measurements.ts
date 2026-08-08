@@ -217,7 +217,11 @@ const MeasurementRowComponent: m.Component<MeasurementRowAttrs> = {
           ),
         ),
         m('.measurement-summary-values', measurementValues(state)),
-        m('span.measurement-edit-hint', 'Editar'),
+        m(
+          'span.measurement-edit-hint',
+          m('span.measurement-edit-icon', {'aria-hidden': 'true'}, '✎'),
+          m('span', 'Editar'),
+        ),
       ),
       m(
         '.measurement-item-actions',
