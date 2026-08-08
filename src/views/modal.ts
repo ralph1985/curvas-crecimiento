@@ -9,7 +9,13 @@ interface ModalAttrs {
 
 const ModalComponent: m.Component<ModalAttrs> = {
   oncreate({dom}) {
-    (dom as HTMLElement).querySelector<HTMLButtonElement>('button')?.focus();
+    const modal = dom as HTMLElement;
+    modal.querySelector<HTMLButtonElement>('button')?.focus();
+    const content = modal.querySelector<HTMLElement>('.modal-content');
+    if (content) {
+      content.scrollTop = 0;
+      content.scrollLeft = 0;
+    }
   },
   view(vnode) {
     const {className, title, kicker, onClose} = vnode.attrs;

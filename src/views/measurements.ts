@@ -15,15 +15,23 @@ import ConfirmModalComponent from './confirm-modal';
 
 const deletingMeasurements = new WeakSet<Measurement>();
 
+type MeasurementRowAttrs = MitosisAttr<Measurement, IMeasurementActions> & {
+  dateOfBirth?: LocalDate;
+};
+
 const MeasurementTableComponent: m.Component<
   MitosisAttr<Child, IChildActions>
 > = {
+  oncreate({dom}) {
+    (dom as HTMLElement).querySelector('input')?.focus();
+  },
   view({attrs: {state, actions}}) {
     const rows = state.measurements.map((measurement, idx) => {
       measurement.idx = idx;
       return m(MeasurementRowComponent, {
         state: measurement,
         actions: MeasurementActions(actions, measurement),
+        dateOfBirth: state.dateOfBirth ?? measurement.dateOfBirth,
       });
     });
 
@@ -55,13 +63,8 @@ const MeasurementTableComponent: m.Component<
   },
 };
 
-const MeasurementRowComponent: m.Component<
-  MitosisAttr<Measurement, IMeasurementActions>
-> = {
-  oncreate({dom}) {
-    (dom as HTMLElement).querySelector('input')?.focus();
-  },
-  view({attrs: {state, actions}}) {
+const MeasurementRowComponent: m.Component<MeasurementRowAttrs> = {
+  view({attrs: {state, actions, dateOfBirth}}) {
     const dateLabel = convert(state.date).toDate().toLocaleDateString('es-ES');
     const cancelDelete = () => deletingMeasurements.delete(state);
     const removeMeasurement = () => {
@@ -96,8 +99,8 @@ const MeasurementRowComponent: m.Component<
       m(
         'td',
         {'data-label': 'Edad en la medición'},
-        state.dateOfBirth
-          ? formatAge(Period.between(state.dateOfBirth, state.date))
+        dateOfBirth
+          ? formatAge(Period.between(dateOfBirth, state.date))
           : 'desconocida',
       ),
       numericInput(

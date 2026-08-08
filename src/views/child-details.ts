@@ -62,34 +62,45 @@ const ChildDetailsComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
         m(
           'li',
           m('label', {class: 'main', for: `child-${state.idx}-sex`}, 'Sexo'),
-          m('input', {
-            type: 'radio',
-            name: `child-${state.idx}-sex`,
-            id: `child-${state.idx}-sex-female`,
-            value: 'female',
-            checked: state.sex === 'female',
-            onchange: (event: Event) =>
-              actions.update(
-                state.name,
-                state.dateOfBirth,
-                (event.currentTarget as HTMLInputElement).value as Sex,
-              ),
-          }),
-          m('label', {for: `child-${state.idx}-sex-female`}, 'Niña'),
-          m('input', {
-            type: 'radio',
-            name: `child-${state.idx}-sex`,
-            id: `child-${state.idx}-sex-male`,
-            value: 'male',
-            checked: state.sex === 'male',
-            onchange: (event: Event) =>
-              actions.update(
-                state.name,
-                state.dateOfBirth,
-                (event.currentTarget as HTMLInputElement).value as Sex,
-              ),
-          }),
-          m('label', {for: `child-${state.idx}-sex-male`}, 'Niño'),
+          m(
+            '.sex-options',
+            m(
+              'label.sex-option',
+              {for: `child-${state.idx}-sex-female`},
+              m('input', {
+                type: 'radio',
+                name: `child-${state.idx}-sex`,
+                id: `child-${state.idx}-sex-female`,
+                value: 'female',
+                checked: state.sex === 'female',
+                onchange: (event: Event) =>
+                  actions.update(
+                    state.name,
+                    state.dateOfBirth,
+                    (event.currentTarget as HTMLInputElement).value as Sex,
+                  ),
+              }),
+              'Niña',
+            ),
+            m(
+              'label.sex-option',
+              {for: `child-${state.idx}-sex-male`},
+              m('input', {
+                type: 'radio',
+                name: `child-${state.idx}-sex`,
+                id: `child-${state.idx}-sex-male`,
+                value: 'male',
+                checked: state.sex === 'male',
+                onchange: (event: Event) =>
+                  actions.update(
+                    state.name,
+                    state.dateOfBirth,
+                    (event.currentTarget as HTMLInputElement).value as Sex,
+                  ),
+              }),
+              'Niño',
+            ),
+          ),
         ),
         m(
           'li',
