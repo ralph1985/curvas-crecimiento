@@ -1,7 +1,13 @@
 import m from 'mithril';
 
 import {exportStateBase64Url, importState} from '../models/export';
-import type {App, Child, IAppActions, MitosisAttr} from '../models/state';
+import {
+  type App,
+  type Child,
+  type IAppActions,
+  type MitosisAttr,
+  mergeChildren,
+} from '../models/state';
 
 const DataManagementComponent: m.Component<MitosisAttr<App, IAppActions>> = {
   view({attrs: {state, actions}}) {
@@ -13,7 +19,7 @@ const DataManagementComponent: m.Component<MitosisAttr<App, IAppActions>> = {
       m('h3#backup-title', 'Copia de seguridad'),
       m(
         'p',
-        'Guarda una copia de tus datos o recupera una que exportaste antes.',
+        'Guarda una copia de tus datos o añade a los que ya tienes una copia exportada antes.',
       ),
       m(
         '.backup-actions',
@@ -40,7 +46,10 @@ const DataManagementComponent: m.Component<MitosisAttr<App, IAppActions>> = {
               const file = input.files?.[0];
               const reader = new FileReader();
               reader.onload = () => {
-                actions.import(importState(reader.result as string) as Child[]);
+                const imported = importState(
+                  reader.result as string,
+                ) as Child[];
+                actions.import(mergeChildren(state.children, imported));
                 m.redraw();
               };
               if (file) {

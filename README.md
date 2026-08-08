@@ -22,11 +22,11 @@ Las curvas disponibles se basan en los estándares de crecimiento infantil de la
 Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La preferencia de tema se guarda por separado bajo `theme-preference`.
 
 - No hay cuentas, base de datos ni envío de datos a un servidor.
-- Los datos permanecen en ese navegador y dispositivo hasta que se borren, se importen otros o se eliminen los datos del sitio.
+- Los datos permanecen en ese navegador y dispositivo hasta que se borren o se eliminen los datos del sitio.
 - La aplicación muestra esta información en una modal durante la primera visita y permite volver a abrirla desde **Cómo se guardan tus datos**.
 - El tema elegido y el aviso de privacidad también se guardan localmente; no se envían a ningún servidor.
 - Usa **Copia de seguridad → Exportar datos** para guardar una copia JSON antes de cambiar de navegador o borrar datos.
-- Al importar un archivo JSON se sustituye la información actual de la aplicación.
+- Al importar un archivo JSON se conservan los datos actuales: se añaden las fichas nuevas y las mediciones nuevas de fichas coincidentes. Una misma medición importada no se duplica.
 
 ## Requisitos
 

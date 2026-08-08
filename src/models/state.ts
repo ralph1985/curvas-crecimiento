@@ -53,6 +53,65 @@ const AppActions = (app: App): IAppActions => ({
   },
 });
 
+function childIdentity(child: Child): string | undefined {
+  const name = child.name?.trim().toLocaleLowerCase();
+  if (!name) {
+    return undefined;
+  }
+
+  return [name, child.dateOfBirth?.toString() ?? '', child.sex ?? ''].join('|');
+}
+
+function measurementIdentity(measurement: Measurement): string {
+  return [
+    measurement.date.toString(),
+    measurement.weight ?? '',
+    measurement.length ?? '',
+    measurement.head ?? '',
+  ].join('|');
+}
+
+function mergeChildren(existing: Child[], imported: Child[]): Child[] {
+  const merged = existing.map(child => ({
+    ...child,
+    measurements: [...child.measurements],
+  }));
+
+  for (const importedChild of imported) {
+    const identity = childIdentity(importedChild);
+    const existingChildIndex = identity
+      ? merged.findIndex(child => childIdentity(child) === identity)
+      : -1;
+
+    if (existingChildIndex === -1) {
+      merged.push({
+        ...importedChild,
+        open: false,
+        measurements: [...importedChild.measurements],
+      });
+      continue;
+    }
+
+    const existingChild = merged[existingChildIndex];
+    const knownMeasurements = new Set(
+      existingChild.measurements.map(measurementIdentity),
+    );
+    existingChild.measurements.push(
+      ...importedChild.measurements.filter(measurement => {
+        const measurementId = measurementIdentity(measurement);
+        if (knownMeasurements.has(measurementId)) {
+          return false;
+        }
+        knownMeasurements.add(measurementId);
+        return true;
+      }),
+    );
+    existingChild.measurements.sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  return merged;
+}
+
 type Sex = 'female' | 'male';
 
 // Child
@@ -235,5 +294,6 @@ export {
   MeasurementActions,
   MeasurementState,
   type MitosisAttr,
+  mergeChildren,
   type Sex,
 };
