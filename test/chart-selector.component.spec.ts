@@ -26,6 +26,10 @@ o.spec('ChartSelectorComponent', () => {
     out.should.have(3, 'input[name="chart-measurement"]');
     out.should.have(2, 'input[name="chart-sex"]');
     out.should.have(2, 'input[name="chart-view-mode"]');
+    out.should.have(
+      1,
+      'a[href="https://www.who.int/tools/child-growth-standards/standards"][target="_blank"][rel="noopener noreferrer"]',
+    );
     out.should.not.have('button.button-secondary');
     out.should.have(
       1,

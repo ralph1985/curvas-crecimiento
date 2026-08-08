@@ -152,6 +152,8 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
           'a',
           {
             href: 'https://www.who.int/tools/child-growth-standards/standards',
+            target: '_blank',
+            rel: 'noopener noreferrer',
           },
           'estándares de crecimiento infantil de la OMS',
         ),
