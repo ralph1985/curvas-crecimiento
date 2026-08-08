@@ -37,6 +37,22 @@ function storedTheme(): ThemePreference {
   return value === 'light' || value === 'dark' ? value : 'auto';
 }
 
+function themeLabel(theme: ThemePreference): string {
+  return theme === 'light'
+    ? 'Claro'
+    : theme === 'dark'
+      ? 'Oscuro'
+      : 'Automático';
+}
+
+function themeIcon(theme: ThemePreference): string {
+  return theme === 'light' ? '☀' : theme === 'dark' ? '☾' : 'A';
+}
+
+function nextTheme(theme: ThemePreference): ThemePreference {
+  return theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto';
+}
+
 function legalPageFromHash(): LegalPageKey | null {
   const hash = window.location.hash.slice(1);
   return hash === 'aviso-legal' ||
@@ -92,6 +108,7 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
         actions: ChildActions(actions, child),
       });
     });
+    const theme = storedTheme();
 
     // Colours per child series, used to style the growth chart lines
     // and legend to match the colour the user picked for that child.
@@ -156,24 +173,18 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
           ),
         ),
         m(
-          'label.theme-control',
-          m('span', 'Tema'),
-          m(
-            'select',
-            {
-              'aria-label': 'Tema de la aplicación',
-              value: storedTheme(),
-              onchange: (event: Event) => {
-                const theme = (event.currentTarget as HTMLSelectElement)
-                  .value as ThemePreference;
-                localStorage.setItem(THEME_PREFERENCE_KEY, theme);
-                applyTheme(theme);
-              },
+          'button.theme-toggle',
+          {
+            type: 'button',
+            'aria-label': `Tema ${themeLabel(theme)}. Cambiar tema`,
+            title: `Tema: ${themeLabel(theme)}`,
+            onclick: () => {
+              const next = nextTheme(theme);
+              localStorage.setItem(THEME_PREFERENCE_KEY, next);
+              applyTheme(next);
             },
-            m('option', {value: 'auto'}, 'Automático'),
-            m('option', {value: 'light'}, 'Claro'),
-            m('option', {value: 'dark'}, 'Oscuro'),
-          ),
+          },
+          themeIcon(theme),
         ),
       ),
       m(AppTabsComponent, {
