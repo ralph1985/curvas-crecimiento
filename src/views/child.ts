@@ -101,26 +101,17 @@ const ChildComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
             ModalComponent,
             {
               className: 'modal-wide',
-              title: `Editar mediciones de ${name}`,
-              kicker: 'Mediciones',
+              title: `Mediciones de ${name}`,
+              kicker: 'Seguimiento',
               onClose: closeMeasurements,
             },
+            m(MeasurementTableComponent, {state, actions}),
             m(
-              'form',
-              {
-                onsubmit: (event: SubmitEvent) => {
-                  event.preventDefault();
-                  actions.addMeasurement();
-                },
-              },
-              m(MeasurementTableComponent, {state, actions}),
+              '.modal-actions',
               m(
-                '.modal-actions',
-                m(
-                  'button.button-secondary',
-                  {type: 'button', onclick: closeMeasurements},
-                  'Cerrar',
-                ),
+                'button.button-secondary',
+                {type: 'button', onclick: closeMeasurements},
+                'Cerrar',
               ),
             ),
           )

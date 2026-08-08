@@ -1,4 +1,6 @@
 // biome-ignore-all lint/correctness/noUnusedFunctionParameters: test stubs
+
+import m from 'mithril';
 import mq from 'mithril-query';
 import o from 'ospec';
 
@@ -94,5 +96,45 @@ o.spec('Child component', () => {
 
     out.setValue(colourInput, '#abcdef');
     o(pickedColour).equals('#abcdef');
+  });
+
+  o('adds a partial measurement and rejects an empty one', () => {
+    const child: Child = {
+      ...children[0],
+      measurements: [],
+    };
+    let addedMeasurement: Measurement | undefined;
+
+    const out = mq(ChildComponent, {
+      state: child,
+      actions: {
+        ...stubChildActions,
+        addMeasurement: (measurement: Measurement | undefined) => {
+          addedMeasurement = measurement;
+        },
+      },
+    });
+
+    out.click('.child-action');
+    const root = out.rootEl as HTMLElement;
+    const form = root.querySelector<HTMLFormElement>('.measurement-form');
+    if (!form) {
+      throw new Error('No se ha encontrado el formulario de mediciones');
+    }
+
+    const submitEvent = form.ownerDocument.createEvent('Event');
+    submitEvent.initEvent('submit', true, true);
+    form.dispatchEvent(submitEvent);
+    m.redraw.sync();
+    o(addedMeasurement).equals(undefined);
+
+    out.setValue('#new-measurement-weight', '4.1');
+    const secondSubmitEvent = form.ownerDocument.createEvent('Event');
+    secondSubmitEvent.initEvent('submit', true, true);
+    form.dispatchEvent(secondSubmitEvent);
+
+    o(addedMeasurement?.weight).equals(4.1);
+    o(addedMeasurement?.length).equals(undefined);
+    o(addedMeasurement?.head).equals(undefined);
   });
 });

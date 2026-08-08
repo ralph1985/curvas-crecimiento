@@ -15,6 +15,16 @@ import ConfirmModalComponent from './confirm-modal';
 
 const deletingMeasurements = new WeakSet<Measurement>();
 
+type MeasurementDraft = {
+  date: string;
+  weight: string;
+  length: string;
+  head: string;
+  error?: string;
+};
+
+const measurementDrafts = new WeakMap<Child, MeasurementDraft>();
+
 type MeasurementRowAttrs = MitosisAttr<Measurement, IMeasurementActions> & {
   dateOfBirth?: LocalDate;
 };
@@ -23,9 +33,10 @@ const MeasurementTableComponent: m.Component<
   MitosisAttr<Child, IChildActions>
 > = {
   oncreate({dom}) {
-    (dom as HTMLElement).querySelector('input')?.focus();
+    (dom as HTMLElement).querySelector<HTMLInputElement>('input')?.focus();
   },
   view({attrs: {state, actions}}) {
+    const draft = getMeasurementDraft(state);
     const rows = state.measurements.map((measurement, idx) => {
       measurement.idx = idx;
       return m(MeasurementRowComponent, {
@@ -36,32 +47,161 @@ const MeasurementTableComponent: m.Component<
     });
 
     return m(
-      'fieldset',
-      m('legend', 'Mediciones'),
+      '.measurements-editor',
       m(
-        'table',
-        m('caption', 'Mediciones de crecimiento'),
+        'form.measurement-form',
+        {
+          onsubmit: (event: SubmitEvent) => {
+            event.preventDefault();
+
+            if (![draft.weight, draft.length, draft.head].some(hasValue)) {
+              draft.error = 'Añade al menos un valor para guardar la medición.';
+              return;
+            }
+
+            try {
+              actions.addMeasurement({
+                idx: -1,
+                date: LocalDate.parse(draft.date),
+                weight: parseDraftValue(draft.weight),
+                length: parseDraftValue(draft.length),
+                head: parseDraftValue(draft.head),
+                dateOfBirth: state.dateOfBirth,
+              });
+              measurementDrafts.set(state, createMeasurementDraft(state));
+            } catch (error) {
+              draft.error = 'Revisa la fecha e inténtalo de nuevo.';
+              console.error('No se ha podido crear la medición', error);
+            }
+          },
+        },
         m(
-          'thead',
+          'fieldset.measurement-entry',
+          m('legend', 'Añadir medición'),
           m(
-            'tr',
-            m('th', 'Fecha'),
-            m('th', 'Edad'),
-            m('th', 'Peso (kg)'),
-            m('th', 'Longitud (cm)'),
-            m('th', 'Perímetro craneal (cm)'),
-            m('th', 'Acciones'),
+            'p.measurement-help',
+            'Registra las medidas disponibles de esta visita. Puedes completar solo una, dos o las tres.',
+          ),
+          m(
+            '.measurement-form-grid',
+            measurementDateInput(state, draft),
+            draftNumericInput('Peso', 'kg', 'weight', draft, 0.001),
+            draftNumericInput('Longitud', 'cm', 'length', draft, 0.1),
+            draftNumericInput('Perímetro craneal', 'cm', 'head', draft, 0.1),
+          ),
+          draft.error ? m('p.measurement-error', draft.error) : null,
+          m(
+            '.measurement-actions',
+            m('button.primary-action', {type: 'submit'}, 'Añadir medición'),
           ),
         ),
-        m('tbody', rows),
       ),
       m(
-        '.measurement-actions',
-        m('button', {type: 'submit'}, 'Añadir medición'),
+        'fieldset.measurement-history',
+        m('legend', 'Historial de mediciones'),
+        state.measurements.length
+          ? m(
+              '.measurement-table-wrap',
+              m(
+                'table',
+                m('caption', 'Mediciones de crecimiento'),
+                m(
+                  'thead',
+                  m(
+                    'tr',
+                    m('th', 'Fecha'),
+                    m('th', 'Edad'),
+                    m('th', 'Peso (kg)'),
+                    m('th', 'Longitud (cm)'),
+                    m('th', 'Perímetro craneal (cm)'),
+                    m('th', 'Acciones'),
+                  ),
+                ),
+                m('tbody', rows),
+              ),
+            )
+          : m(
+              'p.measurement-empty',
+              'Todavía no hay mediciones. Añade la primera arriba para empezar a ver su evolución.',
+            ),
       ),
     );
   },
 };
+
+function getMeasurementDraft(child: Child): MeasurementDraft {
+  const existing = measurementDrafts.get(child);
+  if (existing) {
+    return existing;
+  }
+
+  const draft = createMeasurementDraft(child);
+  measurementDrafts.set(child, draft);
+  return draft;
+}
+
+function createMeasurementDraft(child: Child): MeasurementDraft {
+  return {
+    date: (
+      child.measurements.at(-1)?.date.plusDays(1) ??
+      child.dateOfBirth ??
+      LocalDate.now()
+    ).toString(),
+    weight: '',
+    length: '',
+    head: '',
+  };
+}
+
+function hasValue(value: string): boolean {
+  return value.trim() !== '';
+}
+
+function parseDraftValue(value: string): number | undefined {
+  return hasValue(value) ? Number(value) : undefined;
+}
+
+function measurementDateInput(child: Child, draft: MeasurementDraft): m.Vnode {
+  return m(
+    '.measurement-field',
+    m('label', {for: `new-measurement-date-${child.idx}`}, 'Fecha'),
+    m('input', {
+      id: `new-measurement-date-${child.idx}`,
+      type: 'date',
+      value: draft.date,
+      required: true,
+      onchange: (event: Event) => {
+        draft.date = (event.currentTarget as HTMLInputElement).value;
+        draft.error = undefined;
+      },
+    }),
+  );
+}
+
+function draftNumericInput(
+  label: string,
+  unit: string,
+  key: 'weight' | 'length' | 'head',
+  draft: MeasurementDraft,
+  step: number,
+): m.Vnode {
+  return m(
+    '.measurement-field',
+    m('label', {for: `new-measurement-${key}`}, `${label} (${unit})`),
+    m('input', {
+      id: `new-measurement-${key}`,
+      type: 'number',
+      min: 0,
+      step,
+      inputmode: 'decimal',
+      value: draft[key],
+      onchange: (event: Event) => {
+        draft[key] = (event.currentTarget as HTMLInputElement).value;
+        draft.error = undefined;
+      },
+    }),
+  );
+}
 
 const MeasurementRowComponent: m.Component<MeasurementRowAttrs> = {
   view({attrs: {state, actions, dateOfBirth}}) {
@@ -135,7 +275,10 @@ const MeasurementRowComponent: m.Component<MeasurementRowAttrs> = {
             'aria-label': `Eliminar la medición del ${dateLabel}`,
             onclick: (event: Event) => {
               event.preventDefault();
-              const needConfirm = state.head || state.length || state.weight;
+              const needConfirm =
+                state.head !== undefined ||
+                state.length !== undefined ||
+                state.weight !== undefined;
               if (!needConfirm) {
                 actions.remove();
               } else {
@@ -163,7 +306,7 @@ function numericInput(
   name: string,
   value: number | undefined,
   step: number,
-  onChange: (value: number) => void,
+  onChange: (value: number | undefined) => void,
 ) {
   return m(
     'td',
@@ -171,11 +314,13 @@ function numericInput(
     m('input', {
       type: 'number',
       name,
-      value,
+      value: value ?? '',
       min: 0,
       step,
-      onchange: (event: Event) =>
-        onChange(Number((event.currentTarget as HTMLInputElement).value)),
+      onchange: (event: Event) => {
+        const rawValue = (event.currentTarget as HTMLInputElement).value;
+        onChange(rawValue === '' ? undefined : Number(rawValue));
+      },
     }),
   );
 }

@@ -154,6 +154,21 @@ td input { min-width: 6.5rem; }
 .modal .modal-note { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.9rem; }
 .modal-close { position: absolute; top: 0.85rem; right: 0.85rem; display: inline-grid; width: 2.25rem; height: 2.25rem; place-items: center; padding: 0; background: var(--accent-soft); color: var(--accent-strong); font-size: 1.4rem; line-height: 1; }
 .modal-actions { display: flex; justify-content: flex-end; margin-top: 1.25rem; }
+.measurements-editor { display: grid; gap: 1rem; }
+.measurement-form, .measurement-history { margin: 0; }
+.measurement-entry { background: var(--surface-muted); }
+.measurement-help { margin: 0 0 1rem; max-width: 65ch; font-size: 0.92rem; }
+.measurement-form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.measurement-field { display: grid; gap: 0.4rem; }
+.measurement-field label { color: var(--text-muted); font-size: 0.86rem; font-weight: 750; }
+.measurement-field input { min-width: 0; }
+.measurement-error { margin: 0.85rem 0 0; color: var(--danger) !important; font-size: 0.9rem; font-weight: 700; }
+.measurement-entry .measurement-actions { margin-top: 1rem; }
+.measurement-table-wrap { overflow-x: auto; }
+.measurement-history table { min-width: 50rem; }
+.measurement-history td { min-width: 6rem; }
+.measurement-history td:nth-child(2) { min-width: 8rem; color: var(--text-muted); font-size: 0.9rem; }
+.measurement-empty { margin: 0; padding: 0.7rem 0.25rem 0.15rem; }
 
 @media (max-width: 720px) {
   .app-shell { width: min(100% - 1rem, 70rem); padding: 0.75rem 0 6rem; }
@@ -163,12 +178,19 @@ td input { min-width: 6.5rem; }
   .app-panel { padding: 1rem; }
   .app-tabs { position: fixed; z-index: 10; right: 0.65rem; bottom: max(0.65rem, env(safe-area-inset-bottom)); left: 0.65rem; margin: 0; padding: 0.35rem; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(14px); }
   fieldset ul { grid-template-columns: 1fr; }
+  .measurement-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .measurement-form-grid .measurement-field:first-child { grid-column: 1 / -1; }
   table, thead, tbody, th, tr, td { display: block; }
   thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   tr { margin-bottom: 0.85rem; padding: 0.65rem; border: 1px solid var(--border); border-radius: 0.85rem; }
   td { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8rem, 1.2fr); gap: 0.75rem; align-items: center; border-bottom: 0; }
   td::before { color: var(--text-muted); font-size: 0.82rem; font-weight: 750; content: attr(data-label); }
   td input { min-width: 0; }
+  .measurement-table-wrap { overflow: visible; }
+  .measurement-history table { min-width: 0; }
+  .measurement-history tr { padding: 0.7rem; }
+  .measurement-history td { min-width: 0; }
+  .measurement-history td:nth-child(2) { min-width: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
