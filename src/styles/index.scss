@@ -93,6 +93,8 @@ input:invalid + .error { display: block; }
 
 .primary-action, .measurement-actions button { min-height: 2.75rem; padding: 0.7rem 1rem; background: var(--accent); color: #fffaf5; font-weight: 750; }
 .primary-action:hover, .measurement-actions button:hover { background: var(--accent-strong); }
+.danger-action { min-height: 2.75rem; padding: 0.7rem 1rem; background: var(--danger); color: #ffffff; font-weight: 750; }
+.danger-action:hover { filter: brightness(0.92); }
 .measurement-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
 table { width: 100%; border-collapse: collapse; }
 caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

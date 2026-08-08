@@ -11,6 +11,9 @@ import {
   MeasurementActions,
   type MitosisAttr,
 } from '../models/state';
+import ConfirmModalComponent from './confirm-modal';
+
+const deletingMeasurements = new WeakSet<Measurement>();
 
 const MeasurementTableComponent: m.Component<
   MitosisAttr<Child, IChildActions>
@@ -60,6 +63,11 @@ const MeasurementRowComponent: m.Component<
   },
   view({attrs: {state, actions}}) {
     const dateLabel = convert(state.date).toDate().toLocaleDateString('es-ES');
+    const cancelDelete = () => deletingMeasurements.delete(state);
+    const removeMeasurement = () => {
+      deletingMeasurements.delete(state);
+      actions.remove();
+    };
     return m(
       'tr',
       m(
@@ -125,17 +133,24 @@ const MeasurementRowComponent: m.Component<
             onclick: (event: Event) => {
               event.preventDefault();
               const needConfirm = state.head || state.length || state.weight;
-              if (
-                !needConfirm ||
-                confirm(`¿Eliminar la medición del ${dateLabel}?`)
-              ) {
+              if (!needConfirm) {
                 actions.remove();
+              } else {
+                deletingMeasurements.add(state);
               }
             },
           },
           '×',
         ),
       ),
+      deletingMeasurements.has(state)
+        ? m(ConfirmModalComponent, {
+            title: '¿Eliminar esta medición?',
+            message: `Se eliminará la medición del ${dateLabel}.`,
+            onCancel: cancelDelete,
+            onConfirm: removeMeasurement,
+          })
+        : null,
     );
   },
 };

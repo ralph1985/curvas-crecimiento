@@ -5,11 +5,13 @@ import {LocalDate, Period} from '@js-joda/core';
 import {formatAge} from '../models/format';
 import type {Child, IChildActions, MitosisAttr} from '../models/state';
 import ChildDetailsComponent from './child-details';
+import ConfirmModalComponent from './confirm-modal';
 import {MeasurementTableComponent} from './measurements';
 import ModalComponent from './modal';
 
 const editingChildren = new WeakSet<Child>();
 const editingMeasurements = new WeakSet<Child>();
+const deletingChildren = new WeakSet<Child>();
 
 const ChildComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
   view({attrs: {state, actions}}) {
@@ -21,6 +23,11 @@ const ChildComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
 
     const closeEditor = () => editingChildren.delete(state);
     const closeMeasurements = () => editingMeasurements.delete(state);
+    const cancelDelete = () => deletingChildren.delete(state);
+    const removeChild = () => {
+      deletingChildren.delete(state);
+      actions.remove();
+    };
 
     return m(
       '.child-card',
@@ -60,11 +67,10 @@ const ChildComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
                 state.measurements.length ||
                 state.name ||
                 state.sex;
-              if (
-                !needConfirm ||
-                confirm(`¿Eliminar todos los datos de «${name}»?`)
-              ) {
+              if (!needConfirm) {
                 actions.remove();
+              } else {
+                deletingChildren.add(state);
               }
             },
           },
@@ -118,6 +124,14 @@ const ChildComponent: m.Component<MitosisAttr<Child, IChildActions>> = {
               ),
             ),
           )
+        : null,
+      deletingChildren.has(state)
+        ? m(ConfirmModalComponent, {
+            title: `¿Eliminar a ${name}?`,
+            message: 'Se borrarán todos sus datos y sus mediciones.',
+            onCancel: cancelDelete,
+            onConfirm: removeChild,
+          })
         : null,
     );
   },
