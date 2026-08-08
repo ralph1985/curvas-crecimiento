@@ -3,7 +3,11 @@ import m from 'mithril';
 import type {SeriesObject} from 'chartist';
 
 import {bucketMeasurements} from '../models/chart-series';
-import {LOCAL_STORAGE_KEY, PRIVACY_NOTICE_KEY} from '../models/constants';
+import {
+  LOCAL_STORAGE_KEY,
+  PRIVACY_NOTICE_KEY,
+  THEME_PREFERENCE_KEY,
+} from '../models/constants';
 import {exportState, importState} from '../models/export';
 import {
   type App,
@@ -22,6 +26,16 @@ import PrivacyInfoComponent from './privacy-info';
 
 let showPrivacyInfo = false;
 let legalPage: LegalPageKey | null = null;
+type ThemePreference = 'auto' | 'light' | 'dark';
+
+function applyTheme(theme: ThemePreference) {
+  document.documentElement.dataset.theme = theme;
+}
+
+function storedTheme(): ThemePreference {
+  const value = localStorage.getItem(THEME_PREFERENCE_KEY);
+  return value === 'light' || value === 'dark' ? value : 'auto';
+}
 
 function legalPageFromHash(): LegalPageKey | null {
   const hash = window.location.hash.slice(1);
@@ -40,6 +54,7 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
     };
     window.addEventListener('hashchange', updateLegalPage);
     legalPage = legalPageFromHash();
+    applyTheme(storedTheme());
 
     // load state from local storage
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -138,6 +153,26 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
           m(
             'p',
             'Guarda medidas y consulta su evolución desde este navegador.',
+          ),
+        ),
+        m(
+          'label.theme-control',
+          m('span', 'Tema'),
+          m(
+            'select',
+            {
+              'aria-label': 'Tema de la aplicación',
+              value: storedTheme(),
+              onchange: (event: Event) => {
+                const theme = (event.currentTarget as HTMLSelectElement)
+                  .value as ThemePreference;
+                localStorage.setItem(THEME_PREFERENCE_KEY, theme);
+                applyTheme(theme);
+              },
+            },
+            m('option', {value: 'auto'}, 'Automático'),
+            m('option', {value: 'light'}, 'Claro'),
+            m('option', {value: 'dark'}, 'Oscuro'),
           ),
         ),
       ),

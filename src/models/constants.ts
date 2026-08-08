@@ -1,5 +1,6 @@
 export const LOCAL_STORAGE_KEY = 'growth-data';
 export const PRIVACY_NOTICE_KEY = 'privacy-notice-seen';
+export const THEME_PREFERENCE_KEY = 'theme-preference';
 
 // see chart.scss
 export const COLOURS = [

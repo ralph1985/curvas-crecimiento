@@ -10,6 +10,7 @@ Aplicación web estática para registrar mediciones infantiles y visualizarlas s
 - Consultar curvas de peso, longitud y perímetro craneal para niñas y niños.
 - Ver un detalle inicial de las primeras 13 semanas o elegir una vista personalizada de hasta 5 años, en meses o años.
 - Guardar los datos en el navegador, exportarlos como JSON e importarlos más tarde.
+- Elegir entre tema automático, claro u oscuro; la preferencia se guarda en el navegador.
 
 Las curvas disponibles se basan en los estándares de crecimiento infantil de la OMS. Para longitud, las referencias están separadas en 0–2 años y 2–5 años. La fuente de datos incorporada puede consultarse en [src/data/who.ts](src/data/who.ts) y la documentación de referencia está en la [OMS](https://www.who.int/tools/child-growth-standards/standards).
 
@@ -18,17 +19,18 @@ Las curvas disponibles se basan en los estándares de crecimiento infantil de la
 
 ## Privacidad y datos
 
-Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`.
+Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La preferencia de tema se guarda por separado bajo `theme-preference`.
 
 - No hay cuentas, base de datos ni envío de datos a un servidor.
 - Los datos permanecen en ese navegador y dispositivo hasta que se borren, se importen otros o se eliminen los datos del sitio.
 - La aplicación muestra esta información en una modal durante la primera visita y permite volver a abrirla desde **Cómo se guardan tus datos**.
+- El tema elegido y el aviso de privacidad también se guardan localmente; no se envían a ningún servidor.
 - Usa **Copia de seguridad → Exportar datos** para guardar una copia JSON antes de cambiar de navegador o borrar datos.
 - Al importar un archivo JSON se sustituye la información actual de la aplicación.
 
 ## Requisitos
 
-- Node.js `22.23.1`
+- Node.js `22` (se recomienda usar la versión LTS activa de Node 22)
 - pnpm `10.25.0`, gestionado mediante Corepack
 
 Comprueba las versiones:

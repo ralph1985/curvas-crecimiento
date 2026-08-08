@@ -69,6 +69,7 @@ const pages: Record<
         title: 'Dónde se guardan',
         paragraphs: [
           'Los datos se guardan únicamente en el almacenamiento local (localStorage) del navegador y del dispositivo que estés usando. El código de esta aplicación no los envía a Rafael García Prieto, no crea cuentas y no los guarda en una base de datos propia.',
+          'Ese almacenamiento también conserva la preferencia de tema (automático, claro u oscuro) y el registro de que se ha mostrado la información inicial sobre privacidad. Ninguno de esos datos se envía al titular.',
           'Si borras los datos de navegación o el almacenamiento del sitio, esos registros se perderán. Antes de hacerlo, utiliza Exportar para guardar una copia JSON y poder recuperarla después con Importar.',
         ],
       },
@@ -112,7 +113,7 @@ const pages: Record<
       {
         title: 'Almacenamiento local',
         paragraphs: [
-          'La aplicación usa localStorage, una función del navegador distinta de las cookies, para guardar tus registros y recordar que ya has visto la información inicial sobre privacidad.',
+          'La aplicación usa localStorage, una función del navegador distinta de las cookies, para guardar tus registros, tu preferencia de tema y recordar que ya has visto la información inicial sobre privacidad.',
           'Este almacenamiento pertenece a tu navegador. Si lo eliminas, los datos guardados se perderán. Puedes exportarlos antes a un archivo JSON y recuperarlos después mediante Importar.',
         ],
       },
