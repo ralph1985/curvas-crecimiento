@@ -64,7 +64,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .app-footer p { margin: 0; }
 .app-footer a, .chart-selector a { color: var(--turquoise); font-weight: 750; }
 .footer-info-link { margin: 0 0 0.75rem; padding: 0; background: transparent; color: var(--turquoise); font-size: 0.875rem; font-weight: 750; text-decoration: underline; text-underline-offset: 0.18em; }
+.footer-legal-links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem; }
+.footer-legal-links a { color: var(--text-muted); font-size: 0.8rem; text-underline-offset: 0.18em; }
+.footer-legal-links a:hover { color: var(--turquoise); }
 .panel-intro { max-width: 62ch; margin-bottom: 1.5rem; }
+.legal-page { max-width: 52rem; margin-inline: auto; }
+.legal-page h1 { margin-bottom: 0.5rem; }
+.legal-back { display: inline-block; margin-bottom: 1.5rem; color: var(--turquoise); font-weight: 750; text-underline-offset: 0.18em; }
+.legal-sections { display: grid; gap: 1rem; }
+.legal-section { padding: 1.15rem; border: 1px solid var(--border); border-radius: 1.1rem; background: var(--surface); box-shadow: var(--shadow-small); }
+.legal-section h2 { margin: 0 0 0.65rem; font-size: 1.05rem; }
+.legal-section p { margin: 0 0 0.75rem; }
+.legal-section p:last-child { margin-bottom: 0; }
+.legal-section ul { margin: 0; padding-left: 1.25rem; }
 
 details { margin-bottom: 0.85rem; border: 1px solid var(--border); border-radius: 1.1rem; background: var(--surface); box-shadow: var(--shadow-small); }
 summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.1rem; color: var(--text); font-weight: 750; cursor: pointer; }

@@ -17,12 +17,30 @@ import AppTabsComponent from './app-tabs';
 import {ChartComponent, ChartSelectorComponent} from './chart';
 import ChildComponent from './child';
 import DataManagementComponent from './data-management';
+import LegalPageComponent, {type LegalPageKey} from './legal';
 import PrivacyInfoComponent from './privacy-info';
 
 let showPrivacyInfo = false;
+let legalPage: LegalPageKey | null = null;
+
+function legalPageFromHash(): LegalPageKey | null {
+  const hash = window.location.hash.slice(1);
+  return hash === 'aviso-legal' ||
+    hash === 'politica-privacidad' ||
+    hash === 'politica-cookies'
+    ? hash
+    : null;
+}
 
 const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
   oninit({attrs: {actions}}) {
+    const updateLegalPage = () => {
+      legalPage = legalPageFromHash();
+      m.redraw();
+    };
+    window.addEventListener('hashchange', updateLegalPage);
+    legalPage = legalPageFromHash();
+
     // load state from local storage
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (data !== null) {
@@ -33,12 +51,20 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
     showPrivacyInfo = localStorage.getItem(PRIVACY_NOTICE_KEY) !== 'seen';
   },
 
+  onremove() {
+    legalPage = null;
+  },
+
   onupdate({attrs: {state}}) {
     // save state into local storage
     localStorage.setItem(LOCAL_STORAGE_KEY, exportState(state.children));
   },
 
   view({attrs: {state, actions}}) {
+    if (legalPage) {
+      return m(LegalPageComponent, {page: legalPage});
+    }
+
     const children = state.children.map((child, idx) => {
       child.idx = idx;
       return m(ChildComponent, {
@@ -174,6 +200,31 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
             },
           },
           'Cómo se guardan tus datos',
+        ),
+        m(
+          'nav.footer-legal-links',
+          {'aria-label': 'Información legal'},
+          m(
+            'a',
+            {
+              href: '#aviso-legal',
+            },
+            'Aviso legal',
+          ),
+          m(
+            'a',
+            {
+              href: '#politica-privacidad',
+            },
+            'Privacidad',
+          ),
+          m(
+            'a',
+            {
+              href: '#politica-cookies',
+            },
+            'Cookies',
+          ),
         ),
         m(
           'p',
