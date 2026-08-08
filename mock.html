@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!--
+        <link rel="stylesheet" href="src/index.css">
+        -->
+        <link rel="stylesheet" href="dist/main.css">
+        <title>Curva de crecimiento interactiva</title>        
+    </head>
+    <body>
+        <h1>Curva de crecimiento interactiva</h1>
+        <h2>Niños y niñas</h2>
+
+        <details open="open">
+            <summary>
+                Niño 1: datos de Jonas (3 años)
+                <a href="#">✖</a>
+            </summary>
+            <div class="content">
+                <fieldset>
+                    <legend>Datos personales</legend>
+                    <ul>
+                    <li>
+                        <label
+                            class="main"
+                            for="datapoint-1-name">Nombre</label>
+                        <input
+                            type="text"
+                            name="datapoint-1-name"
+                            id="datapoint-1-name"
+                            placeholder="Jonas"/>
+                    </li>
+                    <li>
+                        <label
+                            class="main"
+                            for="datapoint-1-dob">Fecha de nacimiento</label>
+                        <input
+                            type="date"
+                            name="datapoint-1-dob"
+                            id="datapoint-1-dob"
+                            value="2020-06-23"/>
+                    </li>
+                    </ul>
+                </fieldset>
+                <fieldset>
+                    <legend>Mediciones</legend>
+                <table id="child-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Día</th>
+                            <th>Peso (kg)</th>
+                            <th>Longitud (cm)</th>
+                            <th>Perímetro craneal (cm)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input
+                                    type="date"
+                                    name="datapoint-1-date"
+                                    id="datapoint-1-date" />
+                            </td>
+                            <td>
+                                0 días
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    name="datapoint-1-weight"
+                                    min="0"
+                                    id="datapoint-1-weight" />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    name="datapoint-1-length"
+                                    min="0"
+                                    id="datapoint-1-length" />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    name="datapoint-1-head"
+                                    min="0"
+                                    id="datapoint-1-head" />        
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <input
+                                    type="date"
+                                    name="datapoint-1-date"
+                                    id="datapoint-1-date" 
+                                    required />
+                            </td>
+                            <td>
+                                1 día
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    name="datapoint-1-weight"
+                                    min="0"
+                                    id="datapoint-1-weight" />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    name="datapoint-1-length"
+                                    min="0"
+                                    id="datapoint-1-length" />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    name="datapoint-1-head"
+                                    min="0"
+                                    id="datapoint-1-head" />        
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </fieldset>
+            </div>
+        </details>
+
+        <h2>Gráfica</h2>
+        <details open="open">
+            <summary>Estándar de crecimiento infantil</summary>
+            <p>
+                <label for="chart-select">
+                    Selecciona un <a href="https://www.who.int/tools/child-growth-standards/standards">estándar de crecimiento infantil de la OMS</a>
+                    para representarlo:
+                </label>
+            </p>
+
+            <select name="standard" id="standard-select">
+                <option value="who-boys-13-weeks">
+                    Tabla de niños: peso para la edad: del nacimiento a las 13 semanas (percentiles)
+                </option>
+                <option value="who-boys-5-years">
+                    Tabla de niños: peso para la edad: del nacimiento a los 5 años (percentiles)
+                </option>
+                <option value="who-girls-13-weeks">
+                    Tabla de niñas: peso para la edad: del nacimiento a las 13 semanas (percentiles)
+                </option>
+                <option value="who-girls-5-years">
+                    Tabla de niñas: peso para la edad: del nacimiento a los 5 años (percentiles)
+                </option>
+                <option value="who-boys-7-days">
+                    Tabla de niños: peso para la edad: del nacimiento a la primera semana (percentiles)
+                </option>
+            </select>
+        </details>
+
+        <fieldset>
+            <legend>Gráfica</legend>
+            <ul class="ct-legend">
+                <li class="ct-series-a">
+                    LEGEND
+                </li>
+            </ul>
+        </fieldset>
+
+        <fieldset hidden>
+            <legend>
+                Datos de Jonas (3 años)
+            </legend>
+
+            <label for="datapoint-1-name">Nombre</label>
+            <input
+                type="text"
+                name="datapoint-1-name"
+                id="datapoint-1-name"
+                placeholder="Jonas"/>
+            
+            <label for="datapoint-1-dob">Fecha de nacimiento</label>
+            <input
+                type="date"
+                name="datapoint-1-dob"
+                id="datapoint-1-dob"
+                placeholder="2020-06-23"/>
+
+            <table id="child-0">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Día</th>
+                        <th>Peso (kg)</th>
+                        <th>Longitud (cm)</th>
+                        <th>Perímetro craneal (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input
+                                type="date"
+                                name="datapoint-1-date"
+                                id="datapoint-1-date" />
+                        </td>
+                        <td>
+                            0 días
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="datapoint-1-weight"
+                                min="0"
+                                id="datapoint-1-weight" />
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="datapoint-1-length"
+                                min="0"
+                                id="datapoint-1-length" />
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="datapoint-1-head"
+                                min="0"
+                                id="datapoint-1-head" />        
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input
+                                type="date"
+                                name="datapoint-1-date"
+                                id="datapoint-1-date" />
+                        </td>
+                        <td>
+                            1 día
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="datapoint-1-weight"
+                                min="0"
+                                id="datapoint-1-weight" />
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="datapoint-1-length"
+                                min="0"
+                                id="datapoint-1-length" />
+                        </td>
+                        <td>
+                            <input
+                                type="number"
+                                name="datapoint-1-head"
+                                min="0"
+                                id="datapoint-1-head" />        
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+
+    </body>
+</html>
