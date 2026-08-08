@@ -47,9 +47,12 @@ const ModalComponent: m.Component<ModalAttrs> = {
           },
           '×',
         ),
-        kicker ? m('p.modal-kicker', kicker) : null,
-        m(`h2#${titleId}`, title),
-        vnode.children,
+        m(
+          '.modal-content',
+          kicker ? m('p.modal-kicker', kicker) : null,
+          m(`h2#${titleId}`, title),
+          vnode.children,
+        ),
       ),
     );
   },
