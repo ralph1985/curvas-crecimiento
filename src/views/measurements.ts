@@ -25,6 +25,17 @@ type MeasurementDraft = {
   error?: string;
 };
 
+type MeasurementKey = 'weight' | 'length' | 'head';
+
+const measurementRules: Record<
+  MeasurementKey,
+  {label: string; max: number; decimals: number}
+> = {
+  weight: {label: 'El peso', max: 40, decimals: 3},
+  length: {label: 'La longitud', max: 150, decimals: 1},
+  head: {label: 'El perímetro craneal', max: 70, decimals: 1},
+};
+
 const measurementDrafts = new WeakMap<Child, MeasurementDraft>();
 
 type MeasurementRowAttrs = MitosisAttr<Measurement, IMeasurementActions> & {
@@ -65,15 +76,14 @@ const MeasurementTableComponent: m.Component<
               actions.addMeasurement({
                 idx: -1,
                 date: LocalDate.parse(draft.date),
-                weight: parseDraftValue(draft.weight),
-                length: parseDraftValue(draft.length),
-                head: parseDraftValue(draft.head),
+                weight: parseDraftValue(draft.weight, 'weight'),
+                length: parseDraftValue(draft.length, 'length'),
+                head: parseDraftValue(draft.head, 'head'),
                 dateOfBirth: state.dateOfBirth,
               });
               measurementDrafts.set(state, createMeasurementDraft(state));
             } catch (error) {
-              draft.error = 'Revisa la fecha e inténtalo de nuevo.';
-              console.error('No se ha podido crear la medición', error);
+              draft.error = measurementError(error);
             }
           },
         },
@@ -140,8 +150,43 @@ function hasValue(value: string): boolean {
   return value.trim() !== '';
 }
 
-function parseDraftValue(value: string): number | undefined {
-  return hasValue(value) ? Number(value.replace(',', '.')) : undefined;
+function parseDraftValue(
+  value: string,
+  key: MeasurementKey,
+): number | undefined {
+  if (!hasValue(value)) {
+    return undefined;
+  }
+
+  const rule = measurementRules[key];
+  const normalized = value.trim().replace(',', '.');
+  if (!/^\d+(?:\.\d+)?$/.test(normalized)) {
+    throw new Error(
+      `${rule.label} debe ser un número positivo, por ejemplo 3,250.`,
+    );
+  }
+
+  const decimalPlaces = normalized.split('.')[1]?.length ?? 0;
+  if (decimalPlaces > rule.decimals) {
+    throw new Error(
+      `${rule.label} admite como máximo ${rule.decimals} decimales.`,
+    );
+  }
+
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new Error(`${rule.label} debe ser mayor que cero.`);
+  }
+  if (parsed > rule.max) {
+    throw new Error(`${rule.label} no puede superar ${rule.max}.`);
+  }
+  return parsed;
+}
+
+function measurementError(error: unknown): string {
+  return error instanceof Error
+    ? error.message
+    : 'Revisa los valores e inténtalo de nuevo.';
 }
 
 function measurementDateInput(child: Child, draft: MeasurementDraft): m.Vnode {
@@ -164,7 +209,7 @@ function measurementDateInput(child: Child, draft: MeasurementDraft): m.Vnode {
 function draftNumericInput(
   label: string,
   unit: string,
-  key: 'weight' | 'length' | 'head',
+  key: MeasurementKey,
   draft: MeasurementDraft,
   step: number,
 ): m.Vnode {
@@ -310,14 +355,13 @@ const MeasurementEditModalComponent: m.Component<MeasurementEditModalAttrs> = {
             try {
               actions.update(
                 LocalDate.parse(draft.date),
-                parseDraftValue(draft.weight),
-                parseDraftValue(draft.length),
-                parseDraftValue(draft.head),
+                parseDraftValue(draft.weight, 'weight'),
+                parseDraftValue(draft.length, 'length'),
+                parseDraftValue(draft.head, 'head'),
               );
               onClose();
             } catch (error) {
-              draft.error = 'Revisa la fecha e inténtalo de nuevo.';
-              console.error('No se ha podido actualizar la medición', error);
+              draft.error = measurementError(error);
             }
           },
         },
@@ -383,7 +427,7 @@ function editDateInput(
 function editNumericInput(
   label: string,
   unit: string,
-  key: 'weight' | 'length' | 'head',
+  key: MeasurementKey,
   draft: MeasurementDraft,
   step: number,
 ): m.Vnode {

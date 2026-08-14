@@ -143,6 +143,42 @@ o.spec('Child component', () => {
     o(addedMeasurement?.head).equals(undefined);
   });
 
+  o('rejects malformed and implausible measurements', () => {
+    const child: Child = {...children[0], measurements: []};
+    let addedMeasurement: Measurement | undefined;
+    const out = mq(ChildComponent, {
+      state: child,
+      actions: {
+        ...stubChildActions,
+        addMeasurement: (measurement: Measurement | undefined) => {
+          addedMeasurement = measurement;
+        },
+      },
+    });
+
+    out.click('.child-action');
+    const form = (out.rootEl as HTMLElement).querySelector<HTMLFormElement>(
+      '.measurement-form',
+    );
+    if (!form) {
+      throw new Error('No se ha encontrado el formulario de mediciones');
+    }
+
+    out.setValue('#new-measurement-weight', 'texto');
+    const invalidEvent = form.ownerDocument.createEvent('Event');
+    invalidEvent.initEvent('submit', true, true);
+    form.dispatchEvent(invalidEvent);
+    m.redraw.sync();
+    o(addedMeasurement).equals(undefined);
+
+    out.setValue('#new-measurement-weight', '41');
+    const outOfRangeEvent = form.ownerDocument.createEvent('Event');
+    outOfRangeEvent.initEvent('submit', true, true);
+    form.dispatchEvent(outOfRangeEvent);
+    m.redraw.sync();
+    o(addedMeasurement).equals(undefined);
+  });
+
   o('discards measurement edits when the nested modal is cancelled', () => {
     const originalMeasurement = children[0].measurements[0];
     const child: Child = {
