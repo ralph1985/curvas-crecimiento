@@ -133,7 +133,7 @@ o.spec('Child component', () => {
     m.redraw.sync();
     o(addedMeasurement).equals(undefined);
 
-    out.setValue('#new-measurement-weight', '4.1');
+    out.setValue('#new-measurement-weight', '4,1');
     const secondSubmitEvent = form.ownerDocument.createEvent('Event');
     secondSubmitEvent.initEvent('submit', true, true);
     form.dispatchEvent(secondSubmitEvent);

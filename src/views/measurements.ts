@@ -180,7 +180,7 @@ function draftNumericInput(
       min: 0,
       step,
       value: draft[key],
-      onchange: (event: Event) => {
+      oninput: (event: Event) => {
         draft[key] = (event.currentTarget as HTMLInputElement).value;
         draft.error = undefined;
       },
@@ -399,7 +399,7 @@ function editNumericInput(
       min: 0,
       step,
       value: draft[key],
-      onchange: (event: Event) => {
+      oninput: (event: Event) => {
         draft[key] = (event.currentTarget as HTMLInputElement).value;
         draft.error = undefined;
       },
