@@ -37,6 +37,8 @@ const measurementRules: Record<
 };
 
 const measurementDrafts = new WeakMap<Child, MeasurementDraft>();
+type MeasurementSortOrder = 'desc' | 'asc';
+const measurementSortOrders = new WeakMap<Child, MeasurementSortOrder>();
 
 type MeasurementRowAttrs = MitosisAttr<Measurement, IMeasurementActions> & {
   dateOfBirth?: LocalDate;
@@ -50,14 +52,23 @@ const MeasurementTableComponent: m.Component<
   },
   view({attrs: {state, actions}}) {
     const draft = getMeasurementDraft(state);
-    const rows = state.measurements.map((measurement, idx) => {
-      measurement.idx = idx;
-      return m(MeasurementRowComponent, {
-        state: measurement,
-        actions: MeasurementActions(actions, measurement),
-        dateOfBirth: state.dateOfBirth ?? measurement.dateOfBirth,
+    const sortOrder = getMeasurementSortOrder(state);
+    const rows = state.measurements
+      .map((measurement, idx) => ({measurement, idx}))
+      .sort((a, b) => {
+        const comparison = a.measurement.date.compareTo(b.measurement.date);
+        return sortOrder === 'desc' ? -comparison : comparison;
+      })
+      .map(({measurement, idx}) => {
+        // Keep the original index so edit/delete actions target the right item
+        // even though the history is displayed in a different order.
+        measurement.idx = idx;
+        return m(MeasurementRowComponent, {
+          state: measurement,
+          actions: MeasurementActions(actions, measurement),
+          dateOfBirth: state.dateOfBirth ?? measurement.dateOfBirth,
+        });
       });
-    });
 
     return m(
       '.measurements-editor',
@@ -112,6 +123,9 @@ const MeasurementTableComponent: m.Component<
         'fieldset.measurement-history',
         m('legend', 'Historial de mediciones'),
         state.measurements.length
+          ? measurementSortControl(state, sortOrder)
+          : null,
+        state.measurements.length
           ? m('ul.measurement-history-list', rows)
           : m(
               'p.measurement-empty',
@@ -121,6 +135,37 @@ const MeasurementTableComponent: m.Component<
     );
   },
 };
+
+function getMeasurementSortOrder(child: Child): MeasurementSortOrder {
+  return measurementSortOrders.get(child) ?? 'desc';
+}
+
+function measurementSortControl(
+  child: Child,
+  sortOrder: MeasurementSortOrder,
+): m.Vnode {
+  const id = `measurement-sort-${child.idx}`;
+  return m(
+    '.measurement-history-toolbar',
+    m('label', {for: id}, 'Ordenar por fecha'),
+    m(
+      'select',
+      {
+        id,
+        value: sortOrder,
+        onchange: (event: Event) => {
+          measurementSortOrders.set(
+            child,
+            (event.currentTarget as HTMLSelectElement)
+              .value as MeasurementSortOrder,
+          );
+        },
+      },
+      m('option', {value: 'desc'}, 'Más recientes primero'),
+      m('option', {value: 'asc'}, 'Más antiguas primero'),
+    ),
+  );
+}
 
 function getMeasurementDraft(child: Child): MeasurementDraft {
   const existing = measurementDrafts.get(child);

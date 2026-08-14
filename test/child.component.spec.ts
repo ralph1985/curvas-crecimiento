@@ -70,6 +70,19 @@ o.spec('Child component', () => {
     out.click('.child-action');
     out.should.have(1, '.modal-wide');
     out.should.have(1, '.modal-wide .measurement-history-list');
+    const sortControl = (
+      out.rootEl as HTMLElement
+    ).querySelector<HTMLSelectElement>('#measurement-sort-0');
+    o(sortControl?.value).equals('desc');
+    const firstHistoryValue = (out.rootEl as HTMLElement).querySelector(
+      '.measurement-history-item:first-child .measurement-summary-values',
+    )?.textContent;
+    o(firstHistoryValue?.includes('4.55 kg')).equals(true);
+    out.setValue('#measurement-sort-0', 'asc');
+    const firstAscendingValue = (out.rootEl as HTMLElement).querySelector(
+      '.measurement-history-item:first-child .measurement-summary-values',
+    )?.textContent;
+    o(firstAscendingValue?.includes('3.9 kg')).equals(true);
     out.click('.measurement-summary');
     out.should.have(2, '[role="dialog"]');
     out.should.have(1, '.modal-measurement-edit');

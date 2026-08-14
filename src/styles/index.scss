@@ -167,6 +167,9 @@ td input { min-width: 6.5rem; }
 .measurement-error { margin: 0.85rem 0 0; color: var(--danger) !important; font-size: 0.9rem; font-weight: 700; }
 .measurement-entry .measurement-actions { margin-top: 1rem; }
 .measurement-history-list { display: grid; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+.measurement-history-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 0.55rem; margin-bottom: 0.75rem; }
+.measurement-history-toolbar label { color: var(--text-muted); font-size: 0.86rem; font-weight: 750; }
+.measurement-history-toolbar select { width: auto; min-width: 13rem; }
 .measurement-history-item { display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(0, 2fr) auto; gap: 0.75rem; align-items: center; padding: 0.6rem 0.7rem; border: 1px solid var(--border); border-radius: 0.75rem; }
 .measurement-summary { display: grid; grid-column: 1 / 3; grid-template-columns: minmax(10rem, 1fr) minmax(0, 2fr) auto; gap: 0.75rem; align-items: center; padding: 0; background: transparent; color: var(--text); text-align: left; }
 .measurement-summary-main { display: grid; gap: 0.1rem; }
@@ -199,6 +202,8 @@ td input { min-width: 6.5rem; }
   td::before { color: var(--text-muted); font-size: 0.82rem; font-weight: 750; content: attr(data-label); }
   td input { min-width: 0; }
   .measurement-history-item { grid-template-columns: minmax(0, 1fr) auto; gap: 0.5rem; }
+  .measurement-history-toolbar { align-items: stretch; flex-direction: column; gap: 0.35rem; }
+  .measurement-history-toolbar select { width: 100%; }
   .measurement-summary { grid-column: 1; grid-template-columns: minmax(6rem, 0.8fr) minmax(0, 1.4fr); gap: 0.25rem 0.65rem; }
   .measurement-summary-values { grid-column: 1 / -1; }
   .measurement-edit-hint { justify-self: start; }
