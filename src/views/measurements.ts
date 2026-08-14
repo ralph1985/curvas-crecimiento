@@ -141,7 +141,7 @@ function hasValue(value: string): boolean {
 }
 
 function parseDraftValue(value: string): number | undefined {
-  return hasValue(value) ? Number(value) : undefined;
+  return hasValue(value) ? Number(value.replace(',', '.')) : undefined;
 }
 
 function measurementDateInput(child: Child, draft: MeasurementDraft): m.Vnode {
@@ -173,10 +173,12 @@ function draftNumericInput(
     m('label', {for: `new-measurement-${key}`}, `${label} (${unit})`),
     m('input', {
       id: `new-measurement-${key}`,
-      type: 'number',
+      // `text` keeps the comma entered by Spanish decimal keyboards. The
+      // value is normalised in parseDraftValue before it reaches the model.
+      type: 'text',
+      inputmode: 'decimal',
       min: 0,
       step,
-      inputmode: 'decimal',
       value: draft[key],
       onchange: (event: Event) => {
         draft[key] = (event.currentTarget as HTMLInputElement).value;
@@ -390,10 +392,12 @@ function editNumericInput(
     m('label', {for: `edit-measurement-${key}`}, `${label} (${unit})`),
     m('input', {
       id: `edit-measurement-${key}`,
-      type: 'number',
+      // `text` keeps the comma entered by Spanish decimal keyboards. The
+      // value is normalised in parseDraftValue before it reaches the model.
+      type: 'text',
+      inputmode: 'decimal',
       min: 0,
       step,
-      inputmode: 'decimal',
       value: draft[key],
       onchange: (event: Event) => {
         draft[key] = (event.currentTarget as HTMLInputElement).value;
