@@ -236,7 +236,7 @@ interface IChartActions {
 }
 
 const ChartState = (): Chart => ({
-  name: 'who-wfa-girls-13-weeks',
+  name: 'who-wfa-girls-monthly',
   config: undefined,
   data: [],
 });
@@ -246,16 +246,13 @@ const ChartActions = (chart: Chart): IChartActions => ({
     const config = charts[name];
     if (config) {
       chart.name = name;
-      chart.config = maxAgeMonths
-        ? {
-            ...config,
-            data: sliceChartData(
-              config.data,
-              config.offset.toTotalMonths(),
-              maxAgeMonths,
-            ),
-          }
-        : config;
+      chart.config =
+        config.view === 'monthly' && maxAgeMonths !== undefined
+          ? {
+              ...config,
+              data: sliceChartData(config.data, maxAgeMonths),
+            }
+          : config;
     }
     console.log('Gráfico cargado: ', name);
   },
@@ -263,10 +260,9 @@ const ChartActions = (chart: Chart): IChartActions => ({
 
 function sliceChartData(
   data: ChartConfig['data'],
-  startAgeMonths: number,
   maxAgeMonths: number,
 ): ChartConfig['data'] {
-  const pointCount = Math.max(1, maxAgeMonths - startAgeMonths + 1);
+  const pointCount = Math.max(1, maxAgeMonths + 1);
   return {
     labels: data.labels?.slice(0, pointCount),
     series: data.series.map(series =>

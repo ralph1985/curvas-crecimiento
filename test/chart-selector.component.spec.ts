@@ -1,6 +1,8 @@
 import mq from 'mithril-query';
 import o from 'ospec';
 
+import {ChronoUnit} from '@js-joda/core';
+
 import {
   type Chart,
   ChartActions,
@@ -25,7 +27,7 @@ o.spec('ChartSelectorComponent', () => {
 
     out.should.have(3, 'input[name="chart-measurement"]');
     out.should.have(2, 'input[name="chart-sex"]');
-    out.should.have(2, 'input[name="chart-view-mode"]');
+    out.should.have(3, 'input[name="chart-view-mode"]');
     out.should.have(
       1,
       'a[href="https://www.who.int/tools/child-growth-standards/standards"][target="_blank"][rel="noopener noreferrer"]',
@@ -36,5 +38,22 @@ o.spec('ChartSelectorComponent', () => {
       'input[name="chart-measurement"][value="weight"]:checked',
     );
     out.should.have(1, 'input[name="chart-sex"][value="female"]:checked');
+    out.should.have(
+      1,
+      'input[name="chart-view-mode"][value="monthly"]:checked',
+    );
+    out.setValue(
+      'input[name="chart-view-mode"][value="neonatal"]',
+      'neonatal',
+    );
+    o(state.name).equals('who-wfa-girls-13-weeks');
+    o(state.config?.timeUnit).equals(ChronoUnit.WEEKS);
+
+    out.setValue(
+      'input[name="chart-view-mode"][value="monthly"]',
+      'monthly',
+    );
+    o(state.name).equals('who-wfa-girls-monthly');
+    o(state.config?.data.labels?.length).equals(25);
   });
 });

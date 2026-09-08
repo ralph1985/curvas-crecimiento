@@ -1,6 +1,5 @@
 import m from 'mithril';
 
-import {ChronoUnit} from '@js-joda/core';
 import {
   LineChart,
   type LineChartData,
@@ -12,13 +11,13 @@ import charts from '../data/who';
 import type {Chart, IChartActions, MitosisAttr, Sex} from '../models/state';
 
 type MeasurementKind = 'weight' | 'length' | 'head';
-type AgeRange = '13-weeks' | '2-years' | '5-years';
+type ChartView = 'neonatal' | 'monthly';
 
 type ChartOption = {
   id: string;
   measurement: MeasurementKind;
   sex: Sex;
-  ageRange: AgeRange;
+  view: ChartView;
 };
 
 const measurementLabels: Record<MeasurementKind, string> = {
@@ -27,21 +26,14 @@ const measurementLabels: Record<MeasurementKind, string> = {
   head: 'Perímetro craneal',
 };
 
-const chartOptions: ChartOption[] = Object.keys(charts).map(id => {
-  const [, code, sex, ...range] = id.split('-');
-  const measurementByCode: Record<string, MeasurementKind> = {
-    wfa: 'weight',
-    hfa: 'length',
-    hcfa: 'head',
-  };
-
-  return {
+const chartOptions: ChartOption[] = Object.entries(charts).map(
+  ([id, config]) => ({
     id,
-    measurement: measurementByCode[code],
-    sex: sex === 'boys' ? 'male' : 'female',
-    ageRange: range.join('-') as AgeRange,
-  };
-});
+    measurement: config.measurement,
+    sex: config.sex,
+    view: config.view,
+  }),
+);
 
 function radioOption<T extends string>(
   name: string,
@@ -66,12 +58,12 @@ function radioOption<T extends string>(
   );
 }
 
-type ChartViewMode = 'initial' | 'custom';
+type ChartViewMode = 'monthly' | 'neonatal' | 'custom';
 type DurationUnit = 'months' | 'years';
 
-const MAX_AGE_MONTHS = 60;
-let chartViewMode: ChartViewMode = 'initial';
-let duration = 3;
+const MAX_MONTHLY_DURATION = 24;
+let chartViewMode: ChartViewMode = 'monthly';
+let duration = 2;
 let durationUnit: DurationUnit = 'years';
 
 type ChartSelectorAttrs = MitosisAttr<Chart, IChartActions>;
@@ -86,23 +78,35 @@ function chartFor(
       option =>
         option.measurement === desired.measurement &&
         option.sex === desired.sex &&
-        option.ageRange === desired.ageRange,
+        option.view === desired.view,
     ) ??
     chartOptions.find(
       option =>
         option.measurement === desired.measurement &&
-        option.sex === desired.sex,
+        option.sex === desired.sex &&
+        option.view === 'monthly',
     ) ??
     current
   );
 }
 
+function monthlyOptionFor(option: ChartOption): ChartOption {
+  return (
+    chartOptions.find(
+      candidate =>
+        candidate.measurement === option.measurement &&
+        candidate.sex === option.sex &&
+        candidate.view === 'monthly',
+    ) ?? option
+  );
+}
+
 const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
   oninit({attrs: {state, actions}}) {
-    chartViewMode = 'initial';
-    duration = 3;
+    chartViewMode = 'monthly';
+    duration = 2;
     durationUnit = 'years';
-    actions.loadChart(state.name);
+    actions.loadChart(state.name, MAX_MONTHLY_DURATION);
   },
   view({attrs: {state, actions}}) {
     const current = chartOptions.find(option => option.id === state.name);
@@ -110,20 +114,37 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
       return null;
     }
 
-    const selectedMonths = durationUnit === 'years' ? duration * 12 : duration;
-    const maxDuration = durationUnit === 'years' ? 5 : MAX_AGE_MONTHS;
-    const customRange = (measurement: MeasurementKind, months: number) =>
-      measurement === 'length' && months <= 24 ? '2-years' : '5-years';
+    const monthlyOption = monthlyOptionFor(current);
+    const monthlyMaxAgeMonths = charts[monthlyOption.id].maxAgeMonths;
+    const maxDuration =
+      durationUnit === 'years'
+        ? Math.floor(monthlyMaxAgeMonths / 12)
+        : MAX_MONTHLY_DURATION;
     const loadView = (option: ChartOption) => {
-      const range =
-        chartViewMode === 'initial'
-          ? '13-weeks'
-          : customRange(option.measurement, selectedMonths);
-      const selected = chartFor(option, {ageRange: range as AgeRange});
-      actions.loadChart(
-        selected.id,
-        chartViewMode === 'custom' ? selectedMonths : undefined,
-      );
+      const view = chartViewMode === 'neonatal' ? 'neonatal' : 'monthly';
+      const selected = chartFor(option, {view});
+      const selectedMonthlyOption = monthlyOptionFor(selected);
+      const selectedMonthlyMaxAge =
+        charts[selectedMonthlyOption.id].maxAgeMonths;
+      const selectedMaxDuration =
+        durationUnit === 'years'
+          ? Math.floor(selectedMonthlyMaxAge / 12)
+          : MAX_MONTHLY_DURATION;
+      if (chartViewMode === 'custom') {
+        duration = Math.min(
+          Math.max(durationUnit === 'years' ? 2 : 1, duration),
+          selectedMaxDuration,
+        );
+      }
+      const selectedMonths =
+        durationUnit === 'years' ? duration * 12 : duration;
+      const maxAgeMonths =
+        view === 'monthly'
+          ? chartViewMode === 'custom'
+            ? selectedMonths
+            : MAX_MONTHLY_DURATION
+          : undefined;
+      actions.loadChart(selected.id, maxAgeMonths);
     };
     const select = (changes: Partial<Omit<ChartOption, 'id'>>) =>
       loadView(chartFor(current, changes));
@@ -134,8 +155,8 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
     const updateDuration = (value: number, unit: DurationUnit) => {
       durationUnit = unit;
       duration = Math.min(
-        Math.max(1, value),
-        unit === 'years' ? 5 : MAX_AGE_MONTHS,
+        Math.max(unit === 'years' ? 2 : 1, value),
+        unit === 'years' ? maxDuration : MAX_MONTHLY_DURATION,
       );
       chartViewMode = 'custom';
       loadView(current);
@@ -204,9 +225,16 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
           '.chart-options',
           radioOption(
             'chart-view-mode',
-            'initial',
-            'Detalle inicial',
-            chartViewMode === 'initial',
+            'monthly',
+            '0–24 meses',
+            chartViewMode === 'monthly',
+            selectView,
+          ),
+          radioOption(
+            'chart-view-mode',
+            'neonatal',
+            '13 semanas',
+            chartViewMode === 'neonatal',
             selectView,
           ),
           radioOption(
@@ -226,7 +254,7 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
                 m('input', {
                   id: 'chart-duration',
                   type: 'number',
-                  min: 1,
+                  min: durationUnit === 'years' ? 2 : 1,
                   max: maxDuration,
                   step: 1,
                   value: duration,
@@ -254,9 +282,11 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
               ),
               m(
                 'p.chart-range-help',
-                current.measurement === 'length' && selectedMonths > 24
-                  ? 'Para longitud, la referencia de la OMS cambia a partir de los 2 años y muestra ese tramo disponible.'
-                  : 'Puedes elegir hasta 5 años, que es el máximo disponible en estas referencias.',
+                current.measurement === 'weight'
+                  ? 'La referencia de peso está disponible hasta los 10 años.'
+                  : current.measurement === 'head'
+                    ? 'La referencia de perímetro craneal está disponible hasta los 5 años.'
+                    : 'La referencia de longitud/talla está disponible hasta los 18 años y cambia de tramo a partir de los 2 años.',
               ),
             )
           : null,
@@ -342,6 +372,16 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
           label,
         ),
       );
+      const monthlyAge =
+        attrs.config?.view === 'monthly'
+          ? (attrs.config.data.labels?.length ?? 0) - 1
+          : 0;
+      const axisCaption =
+        attrs.config?.view === 'neonatal'
+          ? 'Edad (semanas)'
+          : monthlyAge > 24
+            ? 'Edad (meses hasta 2 años; después, años)'
+            : 'Edad (meses)';
 
       return m(
         'fieldset',
@@ -355,10 +395,7 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
           ),
           m('div', {id: 'chart'}),
         ),
-        m(
-          '.chart-axis-caption',
-          `Edad (${attrs.config?.timeUnit === ChronoUnit.DAYS ? 'semanas' : 'meses'})`,
-        ),
+        m('.chart-axis-caption', axisCaption),
         m(
           'ul',
           {class: 'ct-legend'},

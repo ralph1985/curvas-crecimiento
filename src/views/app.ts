@@ -124,7 +124,7 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
 
     // Populate chart data
     if (state.chart.config) {
-      const {data, offset, timeUnit, sex, accessorFn} = state.chart.config!;
+      const {data, timeUnit, sex, accessorFn} = state.chart.config;
       const bucketCount = data.labels?.length ?? 0;
 
       const childData: SeriesObject[] = state.children
@@ -134,7 +134,7 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
           name: `child-${c.idx}`,
           className: `ct-series-${String.fromCharCode(97 + c.idx + 3)}`,
           data: bucketMeasurements(
-            c.dateOfBirth!.plus(offset),
+            c.dateOfBirth!,
             c.measurements,
             timeUnit,
             bucketCount,
