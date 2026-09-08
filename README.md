@@ -8,11 +8,11 @@ Aplicación web estática para registrar mediciones infantiles y visualizarlas s
 - Editar los datos de cada bebé en una ventana independiente, sin desplegar el resto de la página.
 - Registrar peso, longitud y perímetro craneal en fechas concretas.
 - Consultar curvas de peso, longitud y perímetro craneal para niñas y niños.
-- Ver un detalle inicial de las primeras 13 semanas o elegir una vista personalizada de hasta 5 años, en meses o años.
+- Abrir una vista de 0–24 meses, consultar opcionalmente el detalle de las primeras 13 semanas o elegir una vista personalizada en meses o años.
 - Guardar los datos en el navegador, exportarlos como JSON e importarlos más tarde.
 - Elegir entre tema automático, claro u oscuro; la preferencia se guarda en el navegador.
 
-Las curvas disponibles se basan en los estándares de crecimiento infantil de la OMS. Para longitud, las referencias están separadas en 0–2 años y 2–5 años. La fuente de datos incorporada puede consultarse en [src/data/who.ts](src/data/who.ts) y la documentación de referencia está en la [OMS](https://www.who.int/tools/child-growth-standards/standards).
+Las curvas disponibles se basan en los estándares de crecimiento infantil de la OMS. La aplicación combina la referencia 0–5 años con la referencia 5–19 años cuando existe para ese indicador: talla hasta 18 años y peso hasta 10 años. El perímetro cefálico se muestra hasta 5 años porque no hay una referencia OMS equivalente posterior. La fuente de datos incorporada puede consultarse en [src/data/who.ts](src/data/who.ts) y [src/data/who-5-19.ts](src/data/who-5-19.ts); la documentación de referencia está en la [OMS](https://www.who.int/tools/child-growth-standards/standards) y sus [indicadores de 5–19 años](https://www.who.int/tools/growth-reference-data-for-5to19-years/indicators).
 
 > [!WARNING]
 > Esta aplicación es una ayuda visual para el seguimiento de datos y no sustituye la valoración de profesionales sanitarios. No se debe usar para diagnosticar, tratar ni tomar decisiones clínicas.

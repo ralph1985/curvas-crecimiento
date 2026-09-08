@@ -14,8 +14,8 @@
 
 ## Estado general
 
-- [ ] Hito 0 — Cerrar el contrato de referencias y edades.
-- [ ] Hito 1 — Corregir la escala temporal y las vistas de las curvas.
+- [x] Hito 0 — Cerrar el contrato de referencias y edades.
+- [x] Hito 1 — Corregir la escala temporal y las vistas de las curvas.
 - [ ] Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes.
 - [ ] Hito 3 — Reparar la carga y representación de talla y perímetro cefálico.
 - [ ] Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes.
@@ -23,7 +23,7 @@
 
 ## Hito 0 — Cerrar el contrato de referencias y edades
 
-**Estado:** Pendiente de decisión.
+**Estado:** Cerrado para este hito.
 
 ### Objetivo
 
@@ -38,10 +38,17 @@ Definir qué referencia debe mostrar cada medida en cada tramo de edad antes de 
 
 ### Decisiones necesarias
 
-- Confirmar si “tablas” se refiere al eje y selector de las gráficas, a una tabla numérica de percentiles, o a ambos.
-- Confirmar qué referencia usar para peso después de los 10 años.
-- Confirmar qué referencia usar para perímetro cefálico después de los 5 años, si realmente se necesita ese tramo.
-- Confirmar si la vista por defecto debe ser 0–24 meses, conservando las 13 semanas como vista específica opcional.
+- “Tablas” se interpreta en este trabajo como los ejes y el selector de las gráficas; no se añade una tabla numérica nueva.
+- Se incorporan datos oficiales posteriores a 5 años cuando existen para el indicador.
+- La vista por defecto es 0–24 meses y se conserva una vista explícita de 13 semanas.
+- El selector ofrece años de 2 a 18, con límite dinámico por indicador.
+
+### Contrato aplicado
+
+- Peso: OMS 0–5 años y OMS 5–10 años.
+- Talla: OMS 0–5 años y OMS 5–19 años, limitada a 18 años en la aplicación.
+- Perímetro cefálico: OMS 0–5 años.
+- La aplicación no dibuja una curva para un tramo sin referencia respaldada.
 
 ### Criterios de aceptación
 
@@ -51,16 +58,16 @@ Definir qué referencia debe mostrar cada medida en cada tramo de edad antes de 
 
 ### Validación
 
-- Revisar las tablas y documentación oficiales seleccionadas.
-- Registrar la decisión final en este documento antes de implementar el hito 1.
+- Revisadas las páginas oficiales de indicadores y percentiles de la OMS.
+- Decisiones registradas antes de cerrar la implementación del hito 1.
 
 ### Mensaje para la pediatra al cerrar el hito
 
-Pendiente. Se preparará cuando se haya acordado el alcance de las referencias.
+Este hito queda documentado como la base de referencias del hito 1.
 
 ## Hito 1 — Corregir la escala temporal y las vistas de las curvas
 
-**Estado:** Pendiente.
+**Estado:** Implementado localmente; pendiente de validación externa con la pediatra.
 
 ### Objetivo
 
@@ -77,11 +84,11 @@ Representar correctamente la edad del paciente: meses entre 0 y 24 meses y años
 
 ### Criterios de aceptación
 
-- Una medición a los 0, 1, 2, 12 y 24 meses aparece en la posición temporal esperada.
-- Las edades posteriores se muestran en años según el contrato acordado.
-- Las etiquetas no dicen “semanas” cuando la vista está expresada en meses.
-- Las mediciones cercanas a 24/25 meses no desaparecen ni se asignan al tramo equivocado.
-- La vista de 13 semanas, si se conserva, sigue funcionando como vista explícita y no se confunde con la vista de 0–24 meses.
+- [x] Una medición a los 0, 1, 2, 12 y 24 meses aparece en la posición temporal esperada.
+- [x] Las edades posteriores se muestran con marcas de años enteros según el contrato acordado.
+- [x] Las etiquetas no dicen “semanas” cuando la vista está expresada en meses.
+- [x] Las mediciones cercanas a 24/25 meses no desaparecen ni se asignan al tramo equivocado.
+- [x] La vista de 13 semanas funciona como vista explícita y no se confunde con la vista de 0–24 meses.
 
 ### Pruebas previstas
 
@@ -89,9 +96,22 @@ Representar correctamente la edad del paciente: meses entre 0 y 24 meses y años
 - Casos con fechas intermedias y fechas posteriores al cambio de unidad.
 - Pruebas de peso, talla y perímetro por separado.
 
+### Validación realizada
+
+- 122 aserciones pasan con `pnpm test`.
+- `pnpm run lint` pasa.
+- `pnpm run compile` pasa.
+- `pnpm run build` termina correctamente; Webpack conserva únicamente sus dos avisos de tamaño de bundle.
+- El servidor de desarrollo entrega el HTML correctamente en `127.0.0.1:8081`.
+- La comprobación Chrome headless no produjo DOM por una limitación del proceso; queda pendiente la comprobación visual manual.
+
 ### Mensaje para la pediatra al cerrar el hito
 
-Pendiente. Se preparará con pasos concretos para comprobar las etiquetas, los cambios de unidad y las edades límite.
+> Hola Marina. Hemos cambiado la vista inicial de Curvas a 0–24 meses y dejamos la vista de 13 semanas como opción independiente. También hemos ampliado el selector por edades: talla hasta 18 años, peso hasta 10 años y perímetro cefálico hasta 5 años, que son los rangos para los que tenemos referencias respaldadas.
+>
+> Cuando puedas, prueba una niña y un niño con medidas en nacimiento, 2 meses, 24 meses y alguna edad posterior. Comprueba que el eje muestra meses hasta los 24 meses, años enteros después, y que al cambiar a 13 semanas el eje cambia a semanas. En talla prueba también una edad posterior a 5 años; en peso y perímetro comprueba que el selector limita el máximo disponible.
+>
+> Dime si las posiciones de los puntos y las etiquetas coinciden con tus gráficas de referencia.
 
 ## Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes
 
@@ -227,5 +247,5 @@ Se preparará después de completar los hitos anteriores, con una lista breve de
 
 | Fecha | Hito | Commit | Evidencia | Estado |
 | --- | --- | --- | --- | --- |
-| 2026-09-08 | Plan inicial | Pendiente | Documento creado; `Percentiles.pdf` excluido | En curso |
-
+| 2026-09-08 | Plan inicial | `d4da8ba` | Documento creado; `Percentiles.pdf` excluido | Cerrado |
+| 2026-09-09 | Hitos 0–1 | Pendiente | 122 aserciones, lint, compile, build y servidor local verificados; `Percentiles.pdf` excluido | Pendiente de commit |
