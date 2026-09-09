@@ -23,5 +23,4 @@ o.spec('App component', () => {
     );
     o(state.section).equals('children');
   });
-
 });

@@ -1,14 +1,12 @@
 import m from 'mithril';
 
-import type {SeriesObject} from 'chartist';
-
 import {
   compatibleChartChildren,
   hiddenSelectedChildCount,
   loadChartSelection,
   selectedChartChildren,
 } from '../models/chart-selection';
-import {bucketMeasurements} from '../models/chart-series';
+import {buildChartSeries} from '../models/chart-series';
 import {
   LOCAL_STORAGE_KEY,
   PRIVACY_NOTICE_KEY,
@@ -136,22 +134,7 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
 
     // Populate chart data with only the selected compatible children.
     if (state.chart.config) {
-      const {data, timeUnit, accessorFn} = state.chart.config;
-      const bucketCount = data.labels?.length ?? 0;
-
-      const childData: SeriesObject[] = selectedChildren.map((child, idx) => ({
-        name: `child-${child.id}`,
-        className: `ct-series-${String.fromCharCode(97 + idx + 3)}`,
-        data: bucketMeasurements(
-          child.dateOfBirth!,
-          child.measurements,
-          timeUnit,
-          bucketCount,
-          accessorFn,
-        ),
-      }));
-
-      state.chart.data = childData;
+      state.chart.data = buildChartSeries(selectedChildren, state.chart.config);
     }
 
     // Colours per selected child series, used to style the growth chart lines

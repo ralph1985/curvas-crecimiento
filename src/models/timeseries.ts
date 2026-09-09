@@ -31,7 +31,7 @@ function dateHistogramAggregation<T>(
   for (const bucket of dateHistogram.buckets) {
     const numericValues = bucket.values
       .map(mapFn)
-      .filter((v): v is number => !!v);
+      .filter((v): v is number => Number.isFinite(v));
 
     const aggregatedValue = aggregationFn(...numericValues);
     aggregatedBuckets.push({key: bucket.key, value: aggregatedValue});
