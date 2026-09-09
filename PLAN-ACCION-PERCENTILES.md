@@ -360,6 +360,10 @@ Replicar el recordatorio local de `Peques` sin cambiar el formato JSON de las co
 - [x] El aviso global permite ir a «Mis peques» y desplaza hasta «Copia de seguridad».
 - [x] Las copias mantienen la versión 3 y la importación por combinación.
 - [x] `Percentiles.pdf` no aparece en staging.
+- [x] `pnpm test` — 163 aserciones.
+- [x] `pnpm run lint`.
+- [x] `pnpm run compile`.
+- [x] `pnpm run build` — termina con los dos avisos conocidos de tamaño de Webpack.
 - [ ] Prueba manual en escritorio y móvil, en tema claro y oscuro.
 
 ### Mensaje de validación para el usuario
@@ -376,4 +380,4 @@ Replicar el recordatorio local de `Peques` sin cambiar el formato JSON de las co
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 4 | `2daaaab`, `660cbd9` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
 | 2026-09-09 | Hito 5 | `5bda26d`, `4e08fcd`, `0cca4f6`, `373dce8`, `313f6e9`, `efb058f`, `5bc0dc4` | 148 aserciones, lint, compile, build, smoke test local de Chrome, respuesta HTTP y Preview automático Vercel Ready verificados; `Percentiles.pdf` excluido | Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra |
-| 2026-09-09 | Hito 6 | Pendiente | Recordatorio local, exportación con fecha, pruebas y documentación | Implementado; pendiente de validación manual en navegador |
+| 2026-09-09 | Hito 6 | `63f7e53`, `812cebc`, `2c28a3b` | 163 aserciones, lint, compile y build verificados; recordatorio local, exportación con fecha, documentación y `Percentiles.pdf` excluido | Implementado; pendiente de validación manual en navegador |
