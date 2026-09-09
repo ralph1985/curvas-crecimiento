@@ -1,5 +1,6 @@
 export const LOCAL_STORAGE_KEY = 'growth-data';
 export const CHART_SELECTION_KEY = 'growth-chart-selection';
+export const BACKUP_REMINDER_KEY = 'growth-backup-reminder';
 export const PRIVACY_NOTICE_KEY = 'privacy-notice-seen';
 export const THEME_PREFERENCE_KEY = 'theme-preference';
 

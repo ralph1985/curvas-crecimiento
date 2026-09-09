@@ -2,6 +2,11 @@ import {LocalDate} from '@js-joda/core';
 import type {SeriesObject} from 'chartist';
 
 import charts, {type ChartConfig} from '../data/who';
+import {
+  type BackupReminderState,
+  createBackupReminderState,
+  recordBackupExport,
+} from './backup-reminder';
 import {saveChartSelection} from './chart-selection';
 import {nextChildId, nextColour} from './constants';
 
@@ -16,6 +21,7 @@ interface App {
   section: AppSection;
   children: Child[];
   chart: Chart;
+  backupReminder: BackupReminderState;
 }
 
 type AppSection = 'children' | 'chart';
@@ -24,12 +30,14 @@ const AppState = (): App => ({
   section: 'children',
   children: [ChildState()],
   chart: ChartState(),
+  backupReminder: createBackupReminderState(),
 });
 
 interface IAppActions {
   addChild(child?: Child): void;
   removeChild(idx: number): void;
   setSection(section: AppSection): void;
+  recordBackupExport(timestamp?: string): void;
 
   import(state: Child[]): void;
 }
@@ -53,6 +61,9 @@ const AppActions = (app: App): IAppActions => ({
   },
   setSection: section => {
     app.section = section;
+  },
+  recordBackupExport: (timestamp = new Date().toISOString()) => {
+    app.backupReminder = recordBackupExport(app.backupReminder, timestamp);
   },
   import: children => {
     app.children = children;
