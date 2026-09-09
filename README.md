@@ -20,13 +20,14 @@ Las curvas disponibles se basan en los estándares de crecimiento infantil de la
 
 ## Privacidad y datos
 
-Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La selección de pacientes de la gráfica se guarda por separado bajo `growth-chart-selection` y la preferencia de tema bajo `theme-preference`.
+Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La selección de pacientes de la gráfica se guarda por separado bajo `growth-chart-selection`, el estado del recordatorio de copia bajo `growth-backup-reminder` y la preferencia de tema bajo `theme-preference`.
 
 - No hay cuentas, base de datos ni envío de datos a un servidor.
 - Los datos permanecen en ese navegador y dispositivo hasta que se borren o se eliminen los datos del sitio.
 - La aplicación muestra esta información en una modal durante la primera visita y permite volver a abrirla desde **Cómo se guardan tus datos**.
 - El tema elegido y el aviso de privacidad también se guardan localmente; no se envían a ningún servidor.
 - Usa **Copia de seguridad → Exportar datos** para guardar una copia JSON antes de cambiar de navegador o borrar datos.
+- La aplicación deja siete días de margen al empezar y avisa si nunca se ha exportado una copia después de ese plazo o si han pasado más de catorce días desde la última exportación.
 - Al importar un archivo JSON se conservan los datos actuales: se añaden las fichas nuevas y las mediciones nuevas de fichas coincidentes. Una misma medición importada no se duplica.
 
 ## Requisitos

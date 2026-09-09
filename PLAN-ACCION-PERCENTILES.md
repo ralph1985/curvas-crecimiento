@@ -344,6 +344,28 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 
 > Hemos incorporado los cambios de las curvas y queremos hacer una última comprobación contigo. Prueba una niña y un niño con medidas al nacimiento, a los 2 meses, a los 24 meses y alguna edad posterior; revisa peso, talla y perímetro cefálico, compara dos hermanos y comprueba las vistas de 13 semanas, 0–24 meses y personalizada, en tema claro y oscuro. Confírmanos si las posiciones, colores, percentiles y datos importados se comportan como esperabas.
 
+## Hito 6 — Recordatorio local de copia de seguridad
+
+**Estado:** Implementado; pendiente de validación manual en navegador.
+
+### Objetivo
+
+Replicar el recordatorio local de `Peques` sin cambiar el formato JSON de las copias existentes ni mezclar esta mejora con el correo de la pediatra.
+
+### Validación
+
+- [x] Siete días de margen inicial sin aviso.
+- [x] Aviso de copia pendiente cuando pasan más de catorce días desde la última exportación.
+- [x] Registro local de `firstUsedAt` y `lastExportedAt` en `growth-backup-reminder`.
+- [x] El aviso global permite ir a «Mis peques» y desplaza hasta «Copia de seguridad».
+- [x] Las copias mantienen la versión 3 y la importación por combinación.
+- [x] `Percentiles.pdf` no aparece en staging.
+- [ ] Prueba manual en escritorio y móvil, en tema claro y oscuro.
+
+### Mensaje de validación para el usuario
+
+> En la aplicación nueva, deja pasar más de siete días sin exportar una copia y comprueba que aparece el aviso. Pulsa «Hacer copia», exporta los datos y verifica que desaparece. Después simula más de catorce días desde la exportación y confirma que vuelve a aparecer indicando los días transcurridos. Revisa también que importar datos no altera ni adelanta el recordatorio.
+
 ## Registro de cambios y commits
 
 | Fecha | Hito | Commit | Evidencia | Estado |
@@ -354,3 +376,4 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 4 | `2daaaab`, `660cbd9` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
 | 2026-09-09 | Hito 5 | `5bda26d`, `4e08fcd`, `0cca4f6`, `373dce8`, `313f6e9`, `efb058f`, `5bc0dc4` | 148 aserciones, lint, compile, build, smoke test local de Chrome, respuesta HTTP y Preview automático Vercel Ready verificados; `Percentiles.pdf` excluido | Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra |
+| 2026-09-09 | Hito 6 | Pendiente | Recordatorio local, exportación con fecha, pruebas y documentación | Implementado; pendiente de validación manual en navegador |
