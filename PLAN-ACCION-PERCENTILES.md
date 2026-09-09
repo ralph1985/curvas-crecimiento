@@ -17,7 +17,7 @@
 - [x] Hito 0 — Cerrar el contrato de referencias y edades.
 - [x] Hito 1 — Corregir la escala temporal y las vistas de las curvas.
 - [x] Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes.
-- [ ] Hito 3 — Reparar la carga y representación de talla y perímetro cefálico.
+- [x] Hito 3 — Reparar la carga y representación de talla y perímetro cefálico.
 - [ ] Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes.
 - [ ] Hito 5 — Regresión completa, prueba con la pediatra y cierre.
 
@@ -180,38 +180,57 @@ Actualmente se generan series para todos los niños compatibles con la medida y 
 
 ## Hito 3 — Reparar la carga y representación de talla y perímetro cefálico
 
-**Estado:** Pendiente de reproducción.
+**Estado:** Implementado localmente; pendiente de validación externa con la pediatra.
 
 ### Objetivo
 
 Asegurar que las curvas de talla y perímetro cefálico cargan los datos del paciente y los colocan en la edad correcta.
 
-### Trabajo previsto
+### Trabajo realizado
 
-- Reproducir el fallo con datos mínimos y con varios pacientes.
-- Verificar selección de medida, sexo, rango, función de acceso al dato y generación de series.
-- Comprobar la vista inicial y las vistas de meses/años.
-- Probar mediciones solo de talla, solo de perímetro y mediciones mixtas.
-- Revisar los límites y offsets de las curvas de longitud 0–2 y 2–5 años.
-- Evitar que un dato ausente en una medida oculte datos válidos de otra.
+- Se centralizó la generación de series de pacientes para que la vista activa
+  siempre use el accessor de su indicador (`length`, `head` o `weight`).
+- Se corrigió el filtrado temporal: se ignoran mediciones anteriores al
+  nacimiento y posteriores al último punto visible de la referencia.
+- Se mantienen huecos como `null`, sin convertirlos en cero ni en `NaN`.
+- Se corrigió la agregación para conservar valores numéricos cero.
+- El cambio de gráfica reconstruye las series a partir de la configuración
+  activa, evitando reutilizar datos de talla o perímetro de otra medida.
 
 ### Criterios de aceptación
 
-- Una medición de talla aparece en la curva de talla en su edad correcta.
-- Una medición de perímetro cefálico aparece en la curva de perímetro en su edad correcta.
-- Cambiar entre peso, talla y perímetro no deja una gráfica anterior ni pierde la serie seleccionada.
-- Los datos fuera del rango de una referencia se tratan de forma explícita y no se dibujan en una posición engañosa.
+- [x] Una medición de talla aparece en la curva de talla en su edad correcta.
+- [x] Una medición de perímetro cefálico aparece en la curva de perímetro en su edad correcta.
+- [x] Cambiar entre peso, talla y perímetro reconstruye la serie activa y conserva la selección de pacientes.
+- [x] Los datos fuera del rango de una referencia se omiten y no se dibujan en una posición engañosa.
+- [x] Los datos de talla y perímetro pueden coexistir en la misma visita sin ocultarse entre sí.
 
-### Pruebas previstas
+### Pruebas realizadas
 
-- Niña y niño.
-- Medición al nacimiento y mediciones en torno a 2 años.
-- Vista inicial, vista mensual y vista posterior a 2 años.
-- Un solo paciente y comparación de dos pacientes.
+- Niña y niño, con talla y perímetro cefálico separados y combinados.
+- Mediciones al nacimiento, a 1–2 meses, a 24 meses y fuera del tramo en 25 meses.
+- Vistas neonatales por semanas y vistas mensuales recortadas a 24 meses.
+- Huecos de datos, fechas anteriores al nacimiento y valores cero.
+
+### Validación realizada
+
+- 145 aserciones pasan con `pnpm test`.
+- `pnpm run lint` pasa.
+- `pnpm run compile` pasa.
+- `pnpm run build` termina correctamente; Webpack conserva únicamente sus dos avisos de tamaño de bundle.
+- La comprobación visual manual en navegador queda pendiente.
 
 ### Mensaje para la pediatra al cerrar el hito
 
-Pendiente. Se preparará con una prueba específica de talla y otra de perímetro cefálico.
+> Hola Marina. Hemos revisado la carga de las curvas de talla y perímetro cefálico. Ahora cada gráfica usa su propia medida, aunque en una misma visita falte una de ellas, y las mediciones se colocan desde la fecha de nacimiento en semanas o meses según la vista.
+>
+> Cuando puedas, prueba una niña y un niño con una medición al nacimiento, otra a 1–2 meses y otra alrededor de 24 meses. Haz una prueba con solo talla, otra con solo perímetro cefálico y otra visita con ambas medidas. Comprueba también que al cambiar entre talla, perímetro y peso no se conserva una línea de la gráfica anterior.
+>
+> Si puedes, revisa además una vista de 13 semanas y una personalizada de 0–24 meses, y dime si algún punto aparece desplazado, desaparece o se dibuja aunque no exista ese dato.
+
+### Mensaje acumulado para enviar al terminar
+
+> Hemos revisado la carga de las curvas de talla y perímetro cefálico. Ahora cada gráfica usa su propia medida, incluso cuando una visita solo tiene uno de los datos, y las mediciones se colocan desde la fecha de nacimiento en semanas o meses según la vista. Prueba una niña y un niño con medidas al nacimiento, a 1–2 meses y alrededor de 24 meses; cambia entre talla, perímetro y peso y comprueba también las vistas de 13 semanas y 0–24 meses.
 
 ## Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes
 
@@ -282,3 +301,4 @@ Se preparará después de completar los hitos anteriores, con una lista breve de
 | 2026-09-08 | Plan inicial | `d4da8ba` | Documento creado; `Percentiles.pdf` excluido | Cerrado |
 | 2026-09-09 | Hitos 0–1 | `274de09`, `45c67fa` | 122 aserciones, lint, compile, build y servidor local verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 2 | `bc40cfb`, `24d0715` | 134 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
+| 2026-09-09 | Hito 3 | `bfb8c34` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
