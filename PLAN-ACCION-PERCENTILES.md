@@ -313,6 +313,7 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 - Preview estable: <https://curvas-crecimiento-git-develop-rafaels-projects-bc09f70a.vercel.app>.
 - Despliegue verificado: `dpl_94t2QaK4rMYhxjNsfigECPV4jAsD`, estado `Ready`, entorno `Preview`.
 - Vercel está conectado a `ralph1985/curvas-crecimiento`, mantiene `main` como `productionBranch`, usa Node `22.x`, `pnpm run build` y `build/dist`.
+- El `Ignored Build Step` construye `main` en producción y `develop` en Preview; solo omite ramas distintas de esas dos.
 - `.vercelignore` excluye `Percentiles.pdf` del contexto de despliegue.
 
 ### Evidencia local
