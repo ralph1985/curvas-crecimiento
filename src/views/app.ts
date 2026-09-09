@@ -1,5 +1,6 @@
 import m from 'mithril';
 
+import {loadBackupReminderState} from '../models/backup-reminder';
 import {
   compatibleChartChildren,
   hiddenSelectedChildCount,
@@ -22,6 +23,7 @@ import {
   type MitosisAttr,
 } from '../models/state';
 import AppTabsComponent from './app-tabs';
+import BackupReminderComponent from './backup-reminder';
 import {ChartComponent, ChartSelectorComponent} from './chart';
 import ChildComponent from './child';
 import DataManagementComponent from './data-management';
@@ -75,6 +77,8 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
     window.addEventListener('hashchange', updateLegalPage);
     legalPage = legalPageFromHash();
     applyTheme(storedTheme());
+
+    state.backupReminder = loadBackupReminderState();
 
     // load state from local storage
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -195,6 +199,16 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
       m(AppTabsComponent, {
         section: state.section,
         onSelect: actions.setSection,
+      }),
+      m(BackupReminderComponent, {
+        state: state.backupReminder,
+        onGoToBackup: () => {
+          actions.setSection('children');
+          window.setTimeout(() => {
+            const backupTitle = document.getElementById('backup-title');
+            backupTitle?.scrollIntoView?.({behavior: 'smooth', block: 'start'});
+          }, 0);
+        },
       }),
       state.section === 'children'
         ? m(

@@ -67,6 +67,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .app-tabs button:hover { color: var(--text); }
 .app-tabs button:active, .primary-action:active, .button-secondary:active, .measurement-actions button:active { transform: translateY(1px); }
 .app-tabs button.is-active { background: var(--surface); color: var(--accent-strong); box-shadow: var(--shadow-small); }
+.backup-reminder { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; padding: 0.9rem 1rem; border: 1px solid color-mix(in srgb, var(--accent-strong) 45%, var(--border)); border-left: 4px solid var(--accent-strong); border-radius: 0.95rem; background: var(--accent-soft); }
+.backup-reminder-content { min-width: 0; }
+.backup-reminder strong { display: block; margin-bottom: 0.2rem; color: var(--text); }
+.backup-reminder p { margin: 0; color: var(--text-muted); line-height: 1.45; }
+.backup-reminder-action { flex: 0 0 auto; min-height: 2.5rem; padding: 0.6rem 0.9rem; border: 1px solid var(--accent); background: var(--surface); color: var(--accent-strong); font-weight: 750; }
+.backup-reminder-action:hover { background: var(--accent-soft); }
 
 .app-panel { padding: clamp(1.1rem, 3vw, 2rem); border: 1px solid var(--border); border-radius: 1.35rem; background: var(--surface); box-shadow: var(--shadow); }
 .app-panel h2 { margin-bottom: 0.35rem; font-size: clamp(1.45rem, 3vw, 1.9rem); letter-spacing: -0.03em; }
@@ -195,6 +201,8 @@ td input { min-width: 6.5rem; }
   .app-header::after { display: none; }
   .brand-mark { width: 3.35rem; min-width: 3.35rem; height: 3.35rem; border-radius: 1.05rem; }
   .app-panel { padding: 1rem; }
+  .backup-reminder { align-items: stretch; flex-direction: column; gap: 0.7rem; }
+  .backup-reminder-action { width: 100%; }
   .app-tabs { position: fixed; z-index: 10; right: 0.65rem; bottom: max(0.65rem, env(safe-area-inset-bottom)); left: 0.65rem; margin: 0; padding: 0.35rem; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(14px); }
   fieldset ul { grid-template-columns: 1fr; }
   .measurement-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
