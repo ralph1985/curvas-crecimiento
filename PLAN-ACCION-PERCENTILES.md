@@ -18,7 +18,7 @@
 - [x] Hito 1 — Corregir la escala temporal y las vistas de las curvas.
 - [x] Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes.
 - [x] Hito 3 — Reparar la carga y representación de talla y perímetro cefálico.
-- [ ] Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes.
+- [x] Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes.
 - [ ] Hito 5 — Regresión completa, prueba con la pediatra y cierre.
 
 ## Hito 0 — Cerrar el contrato de referencias y edades
@@ -234,7 +234,7 @@ Asegurar que las curvas de talla y perímetro cefálico cargan los datos del pac
 
 ## Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes
 
-**Estado:** Pendiente.
+**Estado:** Implementado localmente; pendiente de validación visual y externa con la pediatra.
 
 ### Objetivo
 
@@ -248,17 +248,46 @@ Acercar la representación visual a la referencia de la pediatra sin perder legi
 - Líneas de los pacientes con el color elegido para cada uno.
 - Puntos y leyenda coherentes con esas líneas.
 
+### Trabajo realizado
+
+- Se sustituyeron las clases visuales genéricas de Chartist por clases
+  semánticas para P3/P97, P15/P85, P50 y pacientes.
+- Los percentiles se muestran en negro en tema claro y en un tono claro de
+  alto contraste en tema oscuro.
+- P50 usa una línea continua más gruesa; los demás percentiles conservan
+  patrones discontinuos diferenciados.
+- Las líneas y puntos de pacientes usan su color elegido y cuentan con un
+  color de respaldo accesible si el dato importado no lo incluye.
+- La leyenda usa muestras lineales coherentes con cada estilo.
+- Se fuerza una actualización tras el primer render para aplicar los colores
+  de pacientes desde la carga inicial.
+
 ### Criterios de aceptación
 
-- P3, P15, P50, P85 y P97 se distinguen visualmente sin depender solo del color.
-- P50 es claramente más grueso.
-- Las líneas de pacientes no se confunden con las referencias.
-- El resultado es legible en tema claro, tema oscuro y pantalla pequeña.
-- La leyenda identifica correctamente percentiles y pacientes seleccionados.
+- [x] P3, P15, P50, P85 y P97 se distinguen visualmente sin depender solo del color.
+- [x] P50 es claramente más grueso.
+- [x] Las líneas de pacientes no se confunden con las referencias.
+- [ ] El resultado está comprobado visualmente en tema claro, tema oscuro y pantalla pequeña.
+- [x] La leyenda identifica correctamente percentiles y pacientes seleccionados.
+
+### Validación realizada
+
+- 148 aserciones pasan con `pnpm test`.
+- `pnpm run lint` pasa.
+- `pnpm run compile` pasa.
+- `pnpm run build` termina correctamente; Webpack conserva únicamente sus dos avisos de tamaño de bundle.
+- El CSS generado contiene las clases semánticas y variables de tema esperadas.
+- La comprobación visual manual y la validación de la pediatra quedan pendientes.
 
 ### Mensaje para la pediatra al cerrar el hito
 
-Pendiente. Se preparará para que compare el grosor, color y leyenda con sus gráficas de referencia.
+> Hola Marina. Hemos ajustado el aspecto de las curvas: los percentiles aparecen en una escala monocroma, el P50 destaca con una línea más gruesa y las líneas de cada paciente mantienen su color y aparecen también en la leyenda.
+>
+> Cuando puedas, prueba una gráfica con un paciente y otra comparando dos hermanos. Revisa peso, talla y perímetro cefálico, tanto en tema claro como oscuro, y comprueba especialmente si el P50 se distingue bien y si las líneas de los pacientes se identifican fácilmente.
+
+### Mensaje acumulado para enviar al terminar
+
+> Hemos ajustado el aspecto de las curvas: los percentiles aparecen en una escala monocroma, el P50 destaca con una línea más gruesa y las líneas de cada paciente mantienen su color y aparecen también en la leyenda. Prueba una gráfica con un paciente y otra comparando dos hermanos, en peso, talla y perímetro cefálico, tanto en tema claro como oscuro.
 
 ## Hito 5 — Regresión completa, prueba con la pediatra y cierre
 
@@ -302,3 +331,4 @@ Se preparará después de completar los hitos anteriores, con una lista breve de
 | 2026-09-09 | Hitos 0–1 | `274de09`, `45c67fa` | 122 aserciones, lint, compile, build y servidor local verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 2 | `bc40cfb`, `24d0715` | 134 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
+| 2026-09-09 | Hito 4 | `2daaaab` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
