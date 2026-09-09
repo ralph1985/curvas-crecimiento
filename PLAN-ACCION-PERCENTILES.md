@@ -309,10 +309,10 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 
 ### Entorno de pruebas aislado
 
-- Rama de pruebas: `develop` en GitHub, apuntando a `5bc0dc4`.
+- Rama de pruebas: `develop` en GitHub; los cambios del Hito 6 están en `4ad9583`.
 - Preview estable: <https://curvas-crecimiento-git-develop-rafaels-projects-bc09f70a.vercel.app>.
-- Despliegue verificado: `dpl_BPY45CQqc3rxzuj9YdE9fuJUz8AC`, estado `Ready`, entorno `Preview`.
-- El último despliegue automático de `5bc0dc4` también terminó en estado `Ready`; el alias estable conserva el despliegue funcional verificado anterior.
+- Despliegue verificado: `dpl_BuoBXtVz6A59fYR9ojhtpXMJqWpw`, estado `Ready`, entorno `Preview`.
+- El alias estable apunta al último despliegue automático de `develop` y queda disponible para la validación del recordatorio.
 - Vercel está conectado a `ralph1985/curvas-crecimiento`, mantiene `main` como `productionBranch`, usa Node `22.x`, `pnpm run build` y `build/dist`.
 - El `Ignored Build Step` construye `main` en producción y `develop` en Preview; solo omite ramas distintas de esas dos.
 - `.vercelignore` excluye `Percentiles.pdf` del contexto de despliegue.
@@ -380,4 +380,4 @@ Replicar el recordatorio local de `Peques` sin cambiar el formato JSON de las co
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 4 | `2daaaab`, `660cbd9` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
 | 2026-09-09 | Hito 5 | `5bda26d`, `4e08fcd`, `0cca4f6`, `373dce8`, `313f6e9`, `efb058f`, `5bc0dc4` | 148 aserciones, lint, compile, build, smoke test local de Chrome, respuesta HTTP y Preview automático Vercel Ready verificados; `Percentiles.pdf` excluido | Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra |
-| 2026-09-09 | Hito 6 | `63f7e53`, `812cebc`, `2c28a3b` | 163 aserciones, lint, compile y build verificados; recordatorio local, exportación con fecha, documentación y `Percentiles.pdf` excluido | Implementado; pendiente de validación manual en navegador |
+| 2026-09-09 | Hito 6 | `63f7e53`, `812cebc`, `2c28a3b`, `4ad9583` | 163 aserciones, lint, compile y build verificados; recordatorio local, exportación con fecha, documentación, Preview Vercel `Ready` y `Percentiles.pdf` excluido | Implementado; pendiente de validación manual en navegador |
