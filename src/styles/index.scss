@@ -12,6 +12,8 @@
   --turquoise: #42aaa7;
   --danger: #b43b48;
   --focus: #087875;
+  --chart-reference: #111111;
+  --chart-patient-fallback: #d85d70;
   --shadow: 0 14px 34px rgb(70 47 64 / 9%);
   --shadow-small: 0 5px 14px rgb(70 47 64 / 8%);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -31,6 +33,8 @@
     --turquoise: #7bd3cf;
     --danger: #ffb2b8;
     --focus: #9ce9df;
+    --chart-reference: #f3edf4;
+    --chart-patient-fallback: #ffb7c1;
     --shadow: 0 16px 38px rgb(17 4 7 / 34%);
     --shadow-small: 0 5px 14px rgb(17 4 7 / 28%);
 }

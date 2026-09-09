@@ -141,12 +141,10 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
     // and legend to match the colour the user picked for that child.
     const childColours: Record<string, {label: string; colour: string}> = {};
     for (const child of selectedChildren) {
-      if (child.colourHex) {
-        childColours[`child-${child.id}`] = {
-          label: child.name ?? 'Sin nombre',
-          colour: child.colourHex,
-        };
-      }
+      childColours[`child-${child.id}`] = {
+        label: child.name ?? 'Sin nombre',
+        colour: child.colourHex ?? 'var(--chart-patient-fallback)',
+      };
     }
 
     const hiddenSelectionCount = hiddenSelectedChildCount(

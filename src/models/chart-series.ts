@@ -72,7 +72,7 @@ function buildChartSeries(
     .filter(child => child.dateOfBirth !== undefined)
     .map((child, idx) => ({
       name: `child-${child.id}`,
-      className: `ct-series-${String.fromCharCode(97 + idx + 3)}`,
+      className: `ct-series-${String.fromCharCode(97 + idx + 3)} ct-patient`,
       data: bucketMeasurements(
         child.dateOfBirth!,
         child.measurements,

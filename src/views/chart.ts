@@ -399,6 +399,31 @@ type ChartComponentAttrs = Chart & {
   childColours?: Record<string, {label: string; colour: string}>;
 };
 
+const percentileClasses = [
+  'ct-percentile-outer',
+  'ct-percentile-inner',
+  'ct-percentile-median',
+  'ct-percentile-inner',
+  'ct-percentile-outer',
+];
+
+function buildChartData(
+  baseData: LineChartData | undefined,
+  patientSeries: SeriesObject[],
+): LineChartData {
+  const referenceData = baseData ?? {labels: [], series: []};
+  const base = referenceData.series.map((series, index) => ({
+    name: `percentile-${index}`,
+    className: `ct-percentile ${percentileClasses[index] ?? ''}`.trim(),
+    data: series as SeriesValue<number>[],
+  }));
+
+  return {
+    labels: referenceData.labels,
+    series: [...base, ...patientSeries],
+  };
+}
+
 function ChartComponent(): m.Component<ChartComponentAttrs> {
   let chart: LineChart;
   let data: LineChartData;
@@ -410,22 +435,7 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
       series: [],
     };
 
-    // base data contains the percentile lines
-    // map percentiles to ct-series-{a,b,c}
-    const percentileNameSequence = [0, 1, 2, 1];
-    const base: SeriesObject<number>[] = baseData.series.map((s, i) => ({
-      name: `percentile-${i}`,
-      className: `ct-series-${String.fromCharCode(
-        97 + percentileNameSequence[i % 4],
-      )}`,
-      data: s as SeriesValue<number>[],
-    }));
-
-    // series data contains the measurement lines
-    data = {
-      labels: baseData.labels,
-      series: [...base, ...attrs.data],
-    };
+    data = buildChartData(baseData, attrs.data);
 
     childColours = attrs.childColours ?? {};
   }
@@ -455,6 +465,9 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
       const chartElement = dom.querySelector('#chart');
       chart = new LineChart(chartElement, data, attrs.config?.options);
       chart.on('draw', applySeriesColour);
+      // The constructor draws immediately, before the listener above exists.
+      // Redraw once so selected patient colours also apply on first render.
+      chart.update(data, attrs.config?.options);
       m.redraw();
     },
     onupdate({attrs}) {
@@ -496,9 +509,21 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
         m(
           'ul',
           {class: 'ct-legend'},
-          m('li', {class: 'ct-series-a'}, 'Percentiles 3 y 97'),
-          m('li', {class: 'ct-series-b'}, 'Percentiles 15 y 85'),
-          m('li', {class: 'ct-series-c'}, 'Percentil 50'),
+          m(
+            'li',
+            {class: 'ct-legend-reference ct-legend-outer'},
+            'Percentiles 3 y 97',
+          ),
+          m(
+            'li',
+            {class: 'ct-legend-reference ct-legend-inner'},
+            'Percentiles 15 y 85',
+          ),
+          m(
+            'li',
+            {class: 'ct-legend-reference ct-legend-median'},
+            'Percentil 50',
+          ),
           childLegend,
         ),
       );
@@ -506,4 +531,4 @@ function ChartComponent(): m.Component<ChartComponentAttrs> {
   };
 }
 
-export {ChartComponent, ChartSelectorComponent};
+export {buildChartData, ChartComponent, ChartSelectorComponent};
