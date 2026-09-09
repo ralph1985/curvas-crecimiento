@@ -113,6 +113,10 @@ Representar correctamente la edad del paciente: meses entre 0 y 24 meses y años
 >
 > Dime si las posiciones de los puntos y las etiquetas coinciden con tus gráficas de referencia.
 
+### Mensaje acumulado para enviar al terminar
+
+> Hemos cambiado la vista inicial a 0–24 meses y dejamos las 13 semanas como opción independiente. También hemos ampliado el selector por edades: talla hasta 18 años, peso hasta 10 años y perímetro cefálico hasta 5 años. Cuando puedas, prueba medidas en nacimiento, 2 meses, 24 meses y alguna edad posterior, comprobando las etiquetas y las posiciones de los puntos.
+
 ## Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes
 
 **Estado:** Pendiente.
