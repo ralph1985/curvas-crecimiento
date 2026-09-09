@@ -172,6 +172,12 @@ Actualmente se generan series para todos los niños compatibles con la medida y 
 >
 > Dime si la selección, los colores y la comparación se comportan como esperabas.
 
+### Mensaje acumulado para enviar al terminar
+
+> Ahora Curvas muestra un solo paciente compatible por defecto y permite marcar varios para comparar sus líneas. Prueba una niña y un niño con medidas de peso y talla, abre Curvas y comprueba que aparece solo uno; después marca el segundo y verifica que aparecen las dos líneas con sus colores.
+>
+> También prueba a desmarcarlo, recargar la aplicación y cambiar de medida. Si un paciente no tiene datos para la medida elegida, debería aparecer un aviso y volver a estar seleccionado al regresar a una medida compatible.
+
 ## Hito 3 — Reparar la carga y representación de talla y perímetro cefálico
 
 **Estado:** Pendiente de reproducción.
