@@ -8,6 +8,7 @@ Aplicación web estática para registrar mediciones infantiles y visualizarlas s
 - Editar los datos de cada bebé en una ventana independiente, sin desplegar el resto de la página.
 - Registrar peso, longitud y perímetro craneal en fechas concretas.
 - Consultar curvas de peso, longitud y perímetro craneal para niñas y niños.
+- Mostrar un paciente por defecto y comparar varios pacientes compatibles mediante selección múltiple.
 - Abrir una vista de 0–24 meses, consultar opcionalmente el detalle de las primeras 13 semanas o elegir una vista personalizada en meses o años.
 - Guardar los datos en el navegador, exportarlos como JSON e importarlos más tarde.
 - Elegir entre tema automático, claro u oscuro; la preferencia se guarda en el navegador.
@@ -19,7 +20,7 @@ Las curvas disponibles se basan en los estándares de crecimiento infantil de la
 
 ## Privacidad y datos
 
-Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La preferencia de tema se guarda por separado bajo `theme-preference`.
+Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La selección de pacientes de la gráfica se guarda por separado bajo `growth-chart-selection` y la preferencia de tema bajo `theme-preference`.
 
 - No hay cuentas, base de datos ni envío de datos a un servidor.
 - Los datos permanecen en ese navegador y dispositivo hasta que se borren o se eliminen los datos del sitio.

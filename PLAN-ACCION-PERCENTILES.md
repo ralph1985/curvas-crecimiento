@@ -16,7 +16,7 @@
 
 - [x] Hito 0 — Cerrar el contrato de referencias y edades.
 - [x] Hito 1 — Corregir la escala temporal y las vistas de las curvas.
-- [ ] Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes.
+- [x] Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes.
 - [ ] Hito 3 — Reparar la carga y representación de talla y perímetro cefálico.
 - [ ] Hito 4 — Ajustar el aspecto de percentiles y líneas de pacientes.
 - [ ] Hito 5 — Regresión completa, prueba con la pediatra y cierre.
@@ -119,7 +119,7 @@ Representar correctamente la edad del paciente: meses entre 0 y 24 meses y años
 
 ## Hito 2 — Mostrar un solo paciente por defecto y permitir comparar pacientes
 
-**Estado:** Pendiente.
+**Estado:** Implementado localmente; pendiente de validación externa con la pediatra.
 
 ### Objetivo
 
@@ -136,19 +136,41 @@ Actualmente se generan series para todos los niños compatibles con la medida y 
 - Mostrar casillas solo para pacientes con datos aplicables a la gráfica actual.
 - Permitir marcar varios pacientes para comparar sus curvas.
 - Mantener el color elegido para cada paciente en la línea, puntos y leyenda.
-- Revisar qué ocurre al cambiar de medida, sexo o rango de edad.
+- Persistir la selección en el navegador mediante una clave separada de los datos médicos.
+- Mantener seleccionados los pacientes que temporalmente no sean compatibles y mostrar un aviso.
 
 ### Criterios de aceptación
 
 - Al abrir Curvas aparece un solo paciente, no todos.
 - Marcar un segundo paciente añade únicamente su serie.
 - Desmarcarlo la elimina sin alterar los datos guardados.
-- Cambiar de peso a talla o perímetro conserva solo selecciones válidas.
+- Cambiar de peso a talla o perímetro conserva las selecciones y oculta temporalmente las que no sean compatibles.
 - Los pacientes sin fecha de nacimiento, sexo o medida compatible no se presentan como seleccionables.
+- Al volver a una medida compatible, el paciente seleccionado vuelve a aparecer marcado.
+- Recargar la aplicación conserva la selección; desmarcar todos los pacientes conserva una selección vacía.
+
+### Decisiones de implementación
+
+- La selección se guarda solo en `localStorage`, no en el JSON de copia de seguridad.
+- Cada paciente recibe un identificador estable; los datos anteriores se actualizan mediante una migración.
+- Si una selección deja de ser compatible, se mantiene internamente y se muestra un aviso accesible; no se cambia automáticamente a otro paciente.
+- Si no existe una selección guardada, se selecciona el primer paciente compatible al abrir Curvas.
+
+### Validación realizada
+
+- 134 aserciones pasan con `pnpm test`.
+- `pnpm run lint` pasa.
+- `pnpm run compile` pasa.
+- `pnpm run build` termina correctamente; Webpack conserva únicamente sus dos avisos de tamaño de bundle.
+- La comprobación visual manual en navegador queda pendiente.
 
 ### Mensaje para la pediatra al cerrar el hito
 
-Pendiente. Incluirá cómo abrir Curvas, comprobar el paciente seleccionado y comparar dos hermanos.
+> Hola Marina. Ahora Curvas muestra un solo paciente compatible por defecto y permite marcar varios para comparar sus líneas. Prueba una niña y un niño con medidas de peso y talla, abre Curvas y comprueba que aparece solo uno; después marca el segundo y verifica que aparecen las dos líneas con sus colores.
+>
+> También prueba a desmarcarlo, recargar la aplicación y cambiar de medida. Si un paciente no tiene datos para la medida elegida, debería aparecer un aviso y volver a estar seleccionado al regresar a una medida compatible.
+>
+> Dime si la selección, los colores y la comparación se comportan como esperabas.
 
 ## Hito 3 — Reparar la carga y representación de talla y perímetro cefálico
 
