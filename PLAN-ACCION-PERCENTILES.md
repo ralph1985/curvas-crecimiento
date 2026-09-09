@@ -275,3 +275,4 @@ Se preparará después de completar los hitos anteriores, con una lista breve de
 | --- | --- | --- | --- | --- |
 | 2026-09-08 | Plan inicial | `d4da8ba` | Documento creado; `Percentiles.pdf` excluido | Cerrado |
 | 2026-09-09 | Hitos 0–1 | `274de09`, `45c67fa` | 122 aserciones, lint, compile, build y servidor local verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
+| 2026-09-09 | Hito 2 | `bc40cfb`, `24d0715` | 134 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
