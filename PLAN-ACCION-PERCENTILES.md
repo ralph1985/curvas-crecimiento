@@ -309,9 +309,9 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 
 ### Entorno de pruebas aislado
 
-- Rama de pruebas: `develop` en GitHub, apuntando a `313f6e9`.
+- Rama de pruebas: `develop` en GitHub, apuntando a `efb058f`.
 - Preview estable: <https://curvas-crecimiento-git-develop-rafaels-projects-bc09f70a.vercel.app>.
-- Despliegue verificado: `dpl_2drHbkWh94w8byKFCwkytNVCRQrg`, estado `Ready`, entorno `Preview`.
+- Despliegue verificado: `dpl_BPY45CQqc3rxzuj9YdE9fuJUz8AC`, estado `Ready`, entorno `Preview`.
 - Vercel está conectado a `ralph1985/curvas-crecimiento`, mantiene `main` como `productionBranch`, usa Node `22.x`, `pnpm run build` y `build/dist`.
 - El `Ignored Build Step` construye `main` en producción y `develop` en Preview; solo omite ramas distintas de esas dos.
 - `.vercelignore` excluye `Percentiles.pdf` del contexto de despliegue.
@@ -319,7 +319,7 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 ### Evidencia local
 
 - Google Chrome 150.0.7871.186 carga correctamente el `index.html` de producción y genera el DOM accesible inicial de la aplicación.
-- La comprobación interactiva de datos nuevos/importados, temas y tamaños queda pendiente porque el smoke test no sustituye una revisión visual completa.
+- La URL Preview responde con el HTML de la aplicación; la comprobación interactiva de datos nuevos/importados, temas y tamaños queda pendiente porque el smoke test HTTP no sustituye una revisión visual completa.
 
 ### Validación funcional conjunta
 
@@ -352,4 +352,4 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 | 2026-09-09 | Hito 2 | `bc40cfb`, `24d0715` | 134 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 4 | `2daaaab`, `660cbd9` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
-| 2026-09-09 | Hito 5 | `5bda26d`, `4e08fcd`, `0cca4f6`, `373dce8`, `313f6e9` | 148 aserciones, lint, compile, build, smoke test de Chrome y Preview automático Vercel Ready verificados; `Percentiles.pdf` excluido | Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra |
+| 2026-09-09 | Hito 5 | `5bda26d`, `4e08fcd`, `0cca4f6`, `373dce8`, `313f6e9`, `efb058f` | 148 aserciones, lint, compile, build, smoke test local de Chrome, respuesta HTTP y Preview automático Vercel Ready verificados; `Percentiles.pdf` excluido | Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra |
