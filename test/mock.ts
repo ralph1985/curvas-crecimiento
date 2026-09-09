@@ -15,6 +15,7 @@ const measurement: Measurement = {
 measurement.dateOfBirth = LocalDate.of(2020, 3, 23);
 
 const child0: Child = {
+  id: 'child-ava',
   idx: 0,
   open: true,
   name: 'Ava',
@@ -42,6 +43,7 @@ child0.measurements = [
 measurement.dateOfBirth = LocalDate.of(2022, 2, 10);
 
 const child1: Child = {
+  id: 'child-william',
   idx: 1,
   open: false,
   name: 'William',

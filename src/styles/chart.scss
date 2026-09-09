@@ -18,6 +18,14 @@
 .ct-legend li { position: relative; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.88rem; }
 .ct-legend li::before { position: absolute; top: 0.22rem; left: 0; width: 0.7rem; height: 0.7rem; border: 2px solid transparent; border-radius: 50%; content: ''; }
 .ct-legend li.ct-legend-child::before { border-color: var(--legend-colour); background-color: var(--legend-colour); }
+.chart-patient-options { display: flex; flex-wrap: wrap; gap: 0.55rem 0.75rem; margin: 0; padding: 0; list-style: none; }
+.chart-patient-option { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 2.35rem; padding: 0.45rem 0.65rem; border: 1px solid var(--border); border-radius: 999px; color: var(--text); cursor: pointer; }
+.chart-patient-option:hover { border-color: var(--accent); background: var(--accent-soft); }
+.chart-patient-option:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); font-weight: 750; }
+.chart-patient-option input[type='checkbox'] { width: auto; min-height: auto; accent-color: var(--accent); }
+.chart-patient-colour { width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--patient-colour); }
+.chart-patients-empty, .chart-selection-warning { margin: 0; color: var(--text-muted); line-height: 1.45; }
+.chart-selection-warning { margin-top: 0.7rem; color: var(--danger); }
 @for $i from 1 through list.length(chartist.$ct-series-names) {
   $n: list.nth(chartist.$ct-series-names, $i);
   $c: list.nth(chartist.$ct-series-colors, $i);

@@ -2,7 +2,8 @@ import {LocalDate} from '@js-joda/core';
 import type {SeriesObject} from 'chartist';
 
 import charts, {type ChartConfig} from '../data/who';
-import {nextColour} from './constants';
+import {saveChartSelection} from './chart-selection';
+import {nextChildId, nextColour} from './constants';
 
 // State and actions definitions
 type MitosisAttr<S, A> = {
@@ -44,6 +45,11 @@ const AppActions = (app: App): IAppActions => ({
   },
   removeChild: (idx: number) => {
     app.children.splice(idx, 1);
+    const childIds = new Set(app.children.map(child => child.id));
+    app.chart.selectedChildIds = app.chart.selectedChildIds.filter(id =>
+      childIds.has(id),
+    );
+    saveChartSelection(app.chart.selectedChildIds);
   },
   setSection: section => {
     app.section = section;
@@ -116,6 +122,7 @@ type Sex = 'female' | 'male';
 
 // Child
 interface Child {
+  id: string;
   idx: number;
   name: string | null;
   dateOfBirth?: LocalDate;
@@ -138,6 +145,7 @@ interface IChildActions {
 }
 
 const ChildState = (siblingColours: (string | undefined)[] = []): Child => ({
+  id: nextChildId(),
   idx: 0,
   open: true,
   name: null,
@@ -229,16 +237,21 @@ interface Chart {
   name: string;
   config?: ChartConfig;
   data: SeriesObject[];
+  selectedChildIds: string[];
+  selectionInitialized: boolean;
 }
 
 interface IChartActions {
   loadChart(name: string, maxAgeMonths?: number): void;
+  setSelectedChildIds(ids: string[]): void;
 }
 
 const ChartState = (): Chart => ({
   name: 'who-wfa-girls-monthly',
   config: undefined,
   data: [],
+  selectedChildIds: [],
+  selectionInitialized: false,
 });
 
 const ChartActions = (chart: Chart): IChartActions => ({
@@ -255,6 +268,11 @@ const ChartActions = (chart: Chart): IChartActions => ({
           : config;
     }
     console.log('Gráfico cargado: ', name);
+  },
+  setSelectedChildIds: ids => {
+    chart.selectedChildIds = [...new Set(ids)];
+    chart.selectionInitialized = true;
+    saveChartSelection(chart.selectedChildIds);
   },
 });
 

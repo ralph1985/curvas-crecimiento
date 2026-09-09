@@ -2,6 +2,12 @@ import m from 'mithril';
 
 import type {SeriesObject} from 'chartist';
 
+import {
+  compatibleChartChildren,
+  hiddenSelectedChildCount,
+  loadChartSelection,
+  selectedChartChildren,
+} from '../models/chart-selection';
 import {bucketMeasurements} from '../models/chart-series';
 import {
   LOCAL_STORAGE_KEY,
@@ -63,7 +69,7 @@ function legalPageFromHash(): LegalPageKey | null {
 }
 
 const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
-  oninit({attrs: {actions}}) {
+  oninit({attrs: {state, actions}}) {
     const updateLegalPage = () => {
       legalPage = legalPageFromHash();
       m.redraw();
@@ -78,6 +84,11 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
       const state: Child[] = importState(data);
       actions.import(state);
     }
+
+    const chartSelection = loadChartSelection();
+    state.chart.selectedChildIds = chartSelection.ids;
+    state.chart.selectionInitialized = chartSelection.hasStoredSelection;
+    ChartActions(state.chart).loadChart(state.chart.name, 24);
 
     showPrivacyInfo = localStorage.getItem(PRIVACY_NOTICE_KEY) !== 'seen';
   },
@@ -110,51 +121,64 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
     });
     const theme = storedTheme();
 
-    // Colours per child series, used to style the growth chart lines
+    const compatibleChildren = compatibleChartChildren(
+      state.children,
+      state.chart.config,
+    );
+    const effectiveSelectedChildIds = state.chart.selectionInitialized
+      ? state.chart.selectedChildIds
+      : compatibleChildren.slice(0, 1).map(child => child.id);
+    const selectedChildren = selectedChartChildren(
+      state.children,
+      state.chart.config,
+      effectiveSelectedChildIds,
+    );
+
+    // Populate chart data with only the selected compatible children.
+    if (state.chart.config) {
+      const {data, timeUnit, accessorFn} = state.chart.config;
+      const bucketCount = data.labels?.length ?? 0;
+
+      const childData: SeriesObject[] = selectedChildren.map((child, idx) => ({
+        name: `child-${child.id}`,
+        className: `ct-series-${String.fromCharCode(97 + idx + 3)}`,
+        data: bucketMeasurements(
+          child.dateOfBirth!,
+          child.measurements,
+          timeUnit,
+          bucketCount,
+          accessorFn,
+        ),
+      }));
+
+      state.chart.data = childData;
+    }
+
+    // Colours per selected child series, used to style the growth chart lines
     // and legend to match the colour the user picked for that child.
     const childColours: Record<string, {label: string; colour: string}> = {};
-    for (const child of state.children) {
+    for (const child of selectedChildren) {
       if (child.colourHex) {
-        childColours[`child-${child.idx}`] = {
+        childColours[`child-${child.id}`] = {
           label: child.name ?? 'Sin nombre',
           colour: child.colourHex,
         };
       }
     }
 
-    // Populate chart data
-    if (state.chart.config) {
-      const {data, timeUnit, sex, accessorFn} = state.chart.config;
-      const bucketCount = data.labels?.length ?? 0;
-
-      const childData: SeriesObject[] = state.children
-        .filter(c => c.dateOfBirth)
-        .filter(c => c.sex === null || c.sex === sex)
-        .map(c => ({
-          name: `child-${c.idx}`,
-          className: `ct-series-${String.fromCharCode(97 + c.idx + 3)}`,
-          data: bucketMeasurements(
-            c.dateOfBirth!,
-            c.measurements,
-            timeUnit,
-            bucketCount,
-            accessorFn,
-          ),
-        }));
-
-      state.chart.data = childData;
-    }
-
-    const hasCompatibleMeasurements = state.chart.config
-      ? state.children.some(
-          child =>
-            child.dateOfBirth &&
-            child.sex === state.chart.config?.sex &&
-            child.measurements.some(measurement =>
-              Number.isFinite(state.chart.config?.accessorFn(measurement)),
-            ),
-        )
-      : false;
+    const hiddenSelectionCount = hiddenSelectedChildCount(
+      state.children,
+      state.chart.config,
+      state.chart.selectionInitialized ? state.chart.selectedChildIds : [],
+    );
+    const chartGuidance =
+      hiddenSelectionCount > 0
+        ? null
+        : selectedChildren.length > 0
+          ? null
+          : compatibleChildren.length > 0
+            ? 'Marca al menos un paciente para ver su línea.'
+            : 'Añade fecha de nacimiento, sexo y una medida para ver la línea de tu peque.';
 
     return m(
       '.app-shell',
@@ -231,13 +255,9 @@ const AppComponent: m.Component<MitosisAttr<App, IAppActions>> = {
             m(ChartSelectorComponent, {
               state: state.chart,
               actions: ChartActions(state.chart),
+              children: state.children,
             }),
-            hasCompatibleMeasurements
-              ? null
-              : m(
-                  '.chart-guidance',
-                  'Añade fecha de nacimiento, sexo y una medida para ver la línea de tu peque.',
-                ),
+            chartGuidance ? m('.chart-guidance', chartGuidance) : null,
             m(ChartComponent, {...state.chart, childColours}),
           ),
       m(

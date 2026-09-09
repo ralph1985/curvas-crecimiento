@@ -8,7 +8,17 @@ import {
 } from 'chartist';
 
 import charts from '../data/who';
-import type {Chart, IChartActions, MitosisAttr, Sex} from '../models/state';
+import {
+  compatibleChartChildren,
+  hiddenSelectedChildCount,
+} from '../models/chart-selection';
+import type {
+  Chart,
+  Child,
+  IChartActions,
+  MitosisAttr,
+  Sex,
+} from '../models/state';
 
 type MeasurementKind = 'weight' | 'length' | 'head';
 type ChartView = 'neonatal' | 'monthly';
@@ -66,7 +76,27 @@ let chartViewMode: ChartViewMode = 'monthly';
 let duration = 2;
 let durationUnit: DurationUnit = 'years';
 
-type ChartSelectorAttrs = MitosisAttr<Chart, IChartActions>;
+type ChartSelectorAttrs = MitosisAttr<Chart, IChartActions> & {
+  children: Child[];
+};
+
+function initialiseSelection(
+  state: Chart,
+  actions: IChartActions,
+  children: Child[],
+): void {
+  if (state.selectionInitialized) {
+    return;
+  }
+
+  const firstCompatibleChild = compatibleChartChildren(
+    children,
+    state.config,
+  )[0];
+  if (firstCompatibleChild) {
+    actions.setSelectedChildIds([firstCompatibleChild.id]);
+  }
+}
 
 function chartFor(
   current: ChartOption,
@@ -102,13 +132,17 @@ function monthlyOptionFor(option: ChartOption): ChartOption {
 }
 
 const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
-  oninit({attrs: {state, actions}}) {
+  oninit({attrs: {state, actions, children}}) {
     chartViewMode = 'monthly';
     duration = 2;
     durationUnit = 'years';
     actions.loadChart(state.name, MAX_MONTHLY_DURATION);
+    initialiseSelection(state, actions, children);
   },
-  view({attrs: {state, actions}}) {
+  onupdate({attrs: {state, actions, children}}) {
+    initialiseSelection(state, actions, children);
+  },
+  view({attrs: {state, actions, children}}) {
     const current = chartOptions.find(option => option.id === state.name);
     if (!current) {
       return null;
@@ -116,6 +150,13 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
 
     const monthlyOption = monthlyOptionFor(current);
     const monthlyMaxAgeMonths = charts[monthlyOption.id].maxAgeMonths;
+    const compatibleChildren = compatibleChartChildren(children, state.config);
+    const selectedIds = new Set(state.selectedChildIds);
+    const hiddenSelectionCount = hiddenSelectedChildCount(
+      children,
+      state.config,
+      state.selectedChildIds,
+    );
     const maxDuration =
       durationUnit === 'years'
         ? Math.floor(monthlyMaxAgeMonths / 12)
@@ -160,6 +201,15 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
       );
       chartViewMode = 'custom';
       loadView(current);
+    };
+    const updatePatientSelection = (childId: string, checked: boolean) => {
+      const nextSelection = new Set(state.selectedChildIds);
+      if (checked) {
+        nextSelection.add(childId);
+      } else {
+        nextSelection.delete(childId);
+      }
+      actions.setSelectedChildIds([...nextSelection]);
     };
 
     return m(
@@ -291,12 +341,59 @@ const ChartSelectorComponent: m.Component<ChartSelectorAttrs> = {
             )
           : null,
       ),
+      m(
+        'fieldset.chart-option-group.chart-patients',
+        m('legend', 'Pacientes'),
+        compatibleChildren.length > 0
+          ? m(
+              'ul.chart-patient-options',
+              compatibleChildren.map(child => {
+                const label = child.name?.trim() || 'Sin nombre';
+                const inputId = `chart-patient-${child.id}`;
+                return m(
+                  'li',
+                  m(
+                    'label.chart-patient-option',
+                    {for: inputId},
+                    m('input', {
+                      type: 'checkbox',
+                      name: 'chart-patient',
+                      id: inputId,
+                      value: child.id,
+                      checked: selectedIds.has(child.id),
+                      onchange: (event: Event) =>
+                        updatePatientSelection(
+                          child.id,
+                          (event.currentTarget as HTMLInputElement).checked,
+                        ),
+                    }),
+                    m('.chart-patient-colour', {
+                      'aria-hidden': 'true',
+                      style: `--patient-colour: ${child.colourHex ?? 'var(--accent)'}`,
+                    }),
+                    m('span', label),
+                  ),
+                );
+              }),
+            )
+          : m(
+              'p.chart-patients-empty',
+              'No hay pacientes con datos compatibles para esta gráfica.',
+            ),
+        hiddenSelectionCount > 0
+          ? m(
+              '.chart-selection-warning',
+              {role: 'status', 'aria-live': 'polite'},
+              `${hiddenSelectionCount} ${hiddenSelectionCount === 1 ? 'paciente seleccionado no tiene' : 'pacientes seleccionados no tienen'} datos compatibles con esta gráfica. Se mostrará al volver a una medida compatible.`,
+            )
+          : null,
+      ),
     );
   },
 };
 
 type ChartComponentAttrs = Chart & {
-  /** Colour and display label per child series name (e.g. `child-0`), used
+  /** Colour and display label per child series name (e.g. `child-<id>`), used
       to style the corresponding line/points and legend entry to match the
       colour picked for that child. */
   childColours?: Record<string, {label: string; colour: string}>;
