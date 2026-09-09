@@ -343,3 +343,4 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 | 2026-09-09 | Hito 2 | `bc40cfb`, `24d0715` | 134 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 4 | `2daaaab`, `660cbd9` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
+| 2026-09-09 | Hito 5 | `5bda26d` | 148 aserciones, lint, compile, build y smoke test de Chrome verificados; `Percentiles.pdf` excluido | Validación técnica local completada; pendiente de prueba manual completa y confirmación de la pediatra |
