@@ -5,6 +5,7 @@ import {LocalDate} from '@js-joda/core';
 import {type Child, mergeChildren} from '../src/models/state';
 
 const child = (name: string, measurements: Child['measurements']): Child => ({
+  id: `child-${name.toLowerCase()}`,
   idx: 0,
   name,
   dateOfBirth: LocalDate.of(2024, 1, 1),

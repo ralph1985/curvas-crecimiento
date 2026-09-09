@@ -1,4 +1,6 @@
 export const LOCAL_STORAGE_KEY = 'growth-data';
+export const CHART_SELECTION_KEY = 'growth-chart-selection';
+export const BACKUP_REMINDER_KEY = 'growth-backup-reminder';
 export const PRIVACY_NOTICE_KEY = 'privacy-notice-seen';
 export const THEME_PREFERENCE_KEY = 'theme-preference';
 
@@ -19,6 +21,15 @@ export const COLOURS = [
   '#6188e2',
   '#a748ca',
 ];
+
+let childIdSequence = 0;
+
+export function nextChildId(): string {
+  const sequence = (childIdSequence++).toString(36);
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).slice(2, 8);
+  return `child-${timestamp}-${sequence}-${random}`;
+}
 
 // Picks the first colour from the palette that isn't already assigned to a
 // sibling, so new children get a distinct default colour. Once the palette

@@ -1,7 +1,8 @@
 import {ChronoUnit, type LocalDate, Period} from '@js-joda/core';
-import type {Series} from 'chartist';
+import type {Series, SeriesObject} from 'chartist';
 
-import type {Measurement} from './state';
+import type {ChartConfig} from '../data/who';
+import type {Child, Measurement} from './state';
 import {dateHistogram, dateHistogramAggregation} from './timeseries';
 
 /** Builds a chart-ready, regularly spaced series from a child's measurements. */
@@ -29,8 +30,12 @@ function bucketMeasurements(
   }
 
   const originMeasurement: Measurement = {idx: -1, date: origin};
+  const lastDate = origin.plus(
+    interval.multipliedBy(Math.max(0, maxBuckets - 1)),
+  );
   const filteredMeasurements = measurements.filter(
-    measurement => !measurement.date.isBefore(origin),
+    measurement =>
+      !measurement.date.isBefore(origin) && !measurement.date.isAfter(lastDate),
   );
   const series: Series = Array(maxBuckets).fill(null);
   const histogram = dateHistogram(
@@ -57,4 +62,25 @@ function bucketMeasurements(
   return series;
 }
 
-export {bucketMeasurements};
+function buildChartSeries(
+  children: Child[],
+  config: ChartConfig,
+): SeriesObject[] {
+  const bucketCount = config.data.labels?.length ?? 0;
+
+  return children
+    .filter(child => child.dateOfBirth !== undefined)
+    .map((child, idx) => ({
+      name: `child-${child.id}`,
+      className: `ct-series-${String.fromCharCode(97 + idx + 3)} ct-patient`,
+      data: bucketMeasurements(
+        child.dateOfBirth!,
+        child.measurements,
+        config.timeUnit,
+        bucketCount,
+        config.accessorFn,
+      ),
+    }));
+}
+
+export {bucketMeasurements, buildChartSeries};

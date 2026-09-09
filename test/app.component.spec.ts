@@ -5,6 +5,10 @@ import {AppActions, AppState} from '../src/models/state';
 import AppComponent from '../src/views/app';
 
 o.spec('App component', () => {
+  o.beforeEach(() => {
+    localStorage.clear();
+  });
+
   o('organises the main workflow into accessible tabs', () => {
     const state = AppState();
     const actions = AppActions(state);

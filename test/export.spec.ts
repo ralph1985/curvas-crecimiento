@@ -11,7 +11,9 @@ import {
 
 o.spec('Export/import versioning', () => {
   o('round-trips current version data', () => {
-    const children = [{idx: 0, date: LocalDate.of(2024, 1, 1), name: 'Ava'}];
+    const children = [
+      {id: 'child-ava', idx: 0, date: LocalDate.of(2024, 1, 1), name: 'Ava'},
+    ];
     const serialised = exportState(children);
     const imported = importState<typeof children>(serialised);
 
@@ -19,6 +21,7 @@ o.spec('Export/import versioning', () => {
     o(imported[0].idx).equals(0);
     o(imported[0].name).equals('Ava');
     o(imported[0].date.toString()).equals('2024-01-01');
+    o(typeof (imported[0] as {id?: string}).id).equals('string');
   });
 
   o('exports the current version', () => {
@@ -68,5 +71,18 @@ o.spec('Export/import versioning', () => {
     o(imported[1].colourHex).equals('#123456');
     o(imported[2].colourHex).notEquals(undefined);
     o(imported[0].colourHex).notEquals(imported[2].colourHex);
+  });
+
+  o('backfills stable child ids for legacy data', () => {
+    const legacyV2 = {
+      version: 2,
+      children: [{idx: 0, name: 'Ava'}],
+    };
+
+    const imported = importState<[{id?: string; name: string}]>(
+      JSON.stringify(legacyV2),
+    );
+
+    o(typeof imported[0].id).equals('string');
   });
 });

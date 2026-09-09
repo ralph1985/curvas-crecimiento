@@ -1,6 +1,6 @@
 import {LocalDate} from '@js-joda/core';
 
-import {nextColour} from './constants';
+import {nextChildId, nextColour} from './constants';
 
 // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
 // Encoding UTF-8 ⇢ base64
@@ -23,7 +23,7 @@ const reviver = (key: string, value: any): any => {
 // Version of the persisted/exported state shape. Bump this and add a
 // migration to `migrations` whenever the shape of the persisted data
 // changes in a way that requires upgrading older data.
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 
 interface PersistedState<T> {
   version: number;
@@ -55,6 +55,15 @@ const migrations: Migration[] = [
       },
       [],
     ),
+  }),
+  // v2 -> v3: assign a stable id to every child so view-only selections can
+  // survive reloads without depending on the child's array position.
+  data => ({
+    version: 3,
+    children: ((data.children as {id?: string}[]) ?? []).map(child => ({
+      ...child,
+      id: child.id ?? nextChildId(),
+    })),
   }),
 ];
 

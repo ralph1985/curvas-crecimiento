@@ -2,7 +2,10 @@ import o from 'ospec';
 
 import {LocalDate, Period} from '@js-joda/core';
 
-import {dateHistogram} from '../src/models/timeseries';
+import {
+  dateHistogram,
+  dateHistogramAggregation,
+} from '../src/models/timeseries';
 
 o.spec('Timeseries', () => {
   o('date histogram aggregation - no data', () => {
@@ -82,5 +85,14 @@ o.spec('Timeseries', () => {
     o(histogram.buckets[0].values.length).equals(1);
     o(histogram.buckets[1].values.length).equals(0);
     o(histogram.buckets[2].values.length).equals(1);
+  });
+  o('date histogram aggregation - keeps zero measurements', () => {
+    const histogram = dateHistogram(
+      [{date: LocalDate.of(2024, 3, 1), value: 0}],
+      v => v.date,
+    );
+    const aggregation = dateHistogramAggregation(histogram, v => v.value);
+
+    o(aggregation.buckets[0].value).equals(0);
   });
 });

@@ -8,24 +8,26 @@ Aplicación web estática para registrar mediciones infantiles y visualizarlas s
 - Editar los datos de cada bebé en una ventana independiente, sin desplegar el resto de la página.
 - Registrar peso, longitud y perímetro craneal en fechas concretas.
 - Consultar curvas de peso, longitud y perímetro craneal para niñas y niños.
-- Ver un detalle inicial de las primeras 13 semanas o elegir una vista personalizada de hasta 5 años, en meses o años.
+- Mostrar un paciente por defecto y comparar varios pacientes compatibles mediante selección múltiple.
+- Abrir una vista de 0–24 meses, consultar opcionalmente el detalle de las primeras 13 semanas o elegir una vista personalizada en meses o años.
 - Guardar los datos en el navegador, exportarlos como JSON e importarlos más tarde.
 - Elegir entre tema automático, claro u oscuro; la preferencia se guarda en el navegador.
 
-Las curvas disponibles se basan en los estándares de crecimiento infantil de la OMS. Para longitud, las referencias están separadas en 0–2 años y 2–5 años. La fuente de datos incorporada puede consultarse en [src/data/who.ts](src/data/who.ts) y la documentación de referencia está en la [OMS](https://www.who.int/tools/child-growth-standards/standards).
+Las curvas disponibles se basan en los estándares de crecimiento infantil de la OMS. La aplicación combina la referencia 0–5 años con la referencia 5–19 años cuando existe para ese indicador: talla hasta 18 años y peso hasta 10 años. El perímetro cefálico se muestra hasta 5 años porque no hay una referencia OMS equivalente posterior. La fuente de datos incorporada puede consultarse en [src/data/who.ts](src/data/who.ts) y [src/data/who-5-19.ts](src/data/who-5-19.ts); la documentación de referencia está en la [OMS](https://www.who.int/tools/child-growth-standards/standards) y sus [indicadores de 5–19 años](https://www.who.int/tools/growth-reference-data-for-5to19-years/indicators).
 
 > [!WARNING]
 > Esta aplicación es una ayuda visual para el seguimiento de datos y no sustituye la valoración de profesionales sanitarios. No se debe usar para diagnosticar, tratar ni tomar decisiones clínicas.
 
 ## Privacidad y datos
 
-Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La preferencia de tema se guarda por separado bajo `theme-preference`.
+Los datos de los bebés se guardan únicamente en el `localStorage` del navegador, bajo la clave `growth-data`. La selección de pacientes de la gráfica se guarda por separado bajo `growth-chart-selection`, el estado del recordatorio de copia bajo `growth-backup-reminder` y la preferencia de tema bajo `theme-preference`.
 
 - No hay cuentas, base de datos ni envío de datos a un servidor.
 - Los datos permanecen en ese navegador y dispositivo hasta que se borren o se eliminen los datos del sitio.
 - La aplicación muestra esta información en una modal durante la primera visita y permite volver a abrirla desde **Cómo se guardan tus datos**.
 - El tema elegido y el aviso de privacidad también se guardan localmente; no se envían a ningún servidor.
 - Usa **Copia de seguridad → Exportar datos** para guardar una copia JSON antes de cambiar de navegador o borrar datos.
+- La aplicación deja siete días de margen al empezar y avisa si nunca se ha exportado una copia después de ese plazo o si han pasado más de catorce días desde la última exportación.
 - Al importar un archivo JSON se conservan los datos actuales: se añaden las fichas nuevas y las mediciones nuevas de fichas coincidentes. Una misma medición importada no se duplica.
 
 ## Requisitos

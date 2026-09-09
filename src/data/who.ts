@@ -1,12 +1,18 @@
-import {ChronoUnit, Period} from '@js-joda/core';
+import {ChronoUnit} from '@js-joda/core';
 import {
   Interpolation,
   type LineChartData,
   type LineChartOptions,
-  type Series,
 } from 'chartist';
 
 import type {Measurement, Sex} from '../models/state';
+import {
+  type WhoPercentilePoint,
+  whoHeightBoys,
+  whoHeightGirls,
+  whoWeightBoys,
+  whoWeightGirls,
+} from './who-5-19';
 
 /**
  * Generates sequence of numbers from zero.
@@ -19,18 +25,63 @@ function sequence(count: number): Array<number> {
   });
 }
 
-function stretch(data: unknown[], factor = 1) {
-  const r = Array(data.length * factor).fill(null);
-  data.forEach((v, idx) => {
-    r.splice(idx * factor, 1, v);
-  });
-  return r;
+function monthlyLabels(maxAgeMonths: number): Array<number | string> {
+  return sequence(maxAgeMonths + 1).map(ageMonths =>
+    ageMonths <= 24 || ageMonths % 12 === 0
+      ? ageMonths <= 24
+        ? ageMonths
+        : ageMonths / 12
+      : '',
+  );
 }
 
-function stretchGraph(graph: LineChartData, factor = 1): LineChartData {
+function appendMonthlyReference(
+  base: LineChartData,
+  boundary: readonly [number, number, number, number, number, number],
+  extension: WhoPercentilePoint[],
+): LineChartData {
+  const series = base.series.map((values, index) => [
+    ...(values as number[]),
+    boundary[index + 1],
+    ...extension.map(point => point[index + 1]),
+  ]);
+  const maxAgeMonths = series[0].length - 1;
+
   return {
-    labels: stretch(graph.labels ?? [], factor),
-    series: graph.series.map(s => stretch(s as Series, factor)),
+    labels: monthlyLabels(maxAgeMonths),
+    series,
+  };
+}
+
+function appendMonthlyExtension(
+  base: LineChartData,
+  extension: WhoPercentilePoint[],
+): LineChartData {
+  const series = base.series.map((values, index) => [
+    ...(values as number[]),
+    ...extension.map(point => point[index + 1]),
+  ]);
+  const maxAgeMonths = series[0].length - 1;
+
+  return {
+    labels: monthlyLabels(maxAgeMonths),
+    series,
+  };
+}
+
+function combineMonthlyReferences(
+  first: LineChartData,
+  second: LineChartData,
+): LineChartData {
+  const series = first.series.map((values, index) => [
+    ...(values as number[]),
+    ...(second.series[index] as number[]).slice(1),
+  ]);
+  const maxAgeMonths = series[0].length - 1;
+
+  return {
+    labels: monthlyLabels(maxAgeMonths),
+    series,
   };
 }
 
@@ -461,6 +512,35 @@ const whoHcfaGirls5Years: LineChartData = {
   ],
 };
 
+const whoWfaGirlsMonthly = appendMonthlyReference(
+  whoWfaGirls5Years,
+  [60, 14, 15.7, 18.2, 21.3, 24.4],
+  whoWeightGirls,
+);
+const whoWfaBoysMonthly = appendMonthlyReference(
+  whoWfaBoys5Years,
+  [60, 14.3, 16, 18.3, 21.1, 23.8],
+  whoWeightBoys,
+);
+const whoHfaGirlsMonthly = appendMonthlyExtension(
+  combineMonthlyReferences(whoHfaGirls2Years, whoHfaGirls5Years),
+  whoHeightGirls,
+);
+const whoHfaBoysMonthly = appendMonthlyExtension(
+  combineMonthlyReferences(whoHfaBoys2Years, whoHfaBoys5Years),
+  whoHeightBoys,
+);
+const whoHcfaGirlsMonthly = appendMonthlyReference(
+  whoHcfaGirls5Years,
+  [60, 47.2, 48.4, 49.9, 51.4, 52.6],
+  [],
+);
+const whoHcfaBoysMonthly = appendMonthlyReference(
+  whoHcfaBoys5Years,
+  [60, 47.9, 49.2, 50.7, 52.3, 53.5],
+  [],
+);
+
 function options(_axisXUnit: string, _axisYUnit: string): LineChartOptions {
   return {
     lineSmooth: Interpolation.none({fillHoles: true}),
@@ -468,15 +548,20 @@ function options(_axisXUnit: string, _axisYUnit: string): LineChartOptions {
     axisX: {
       // Keep the unit in a separate caption. Long labels such as
       // "12 semanas" collide on narrow screens.
-      labelInterpolationFnc: val => (val ? `${val}` : null),
+      labelInterpolationFnc: val =>
+        val === '' || val === null || val === undefined ? null : `${val}`,
     },
     axisY: {
       // Keep the unit in the axis caption so it is not repeated on every tick.
-      labelInterpolationFnc: val => (val ? `${val}` : null),
+      labelInterpolationFnc: val =>
+        val === '' || val === null || val === undefined ? null : `${val}`,
     },
     plugins: [],
   };
 }
+
+type ChartMeasurement = 'weight' | 'length' | 'head';
+type ChartView = 'neonatal' | 'monthly';
 
 type ChartConfig = {
   /** Name of the chart. */
@@ -487,14 +572,16 @@ type ChartConfig = {
   options: LineChartOptions;
   /** Unit displayed once beside the Y axis. */
   axisYUnit: string;
-  /** The resolution of the chart as time unit, e.g. "DAYS" if
-      up to one measurement per day should be displayed. */
+  /** The resolution used to bucket the patient's measurements. */
   timeUnit: ChronoUnit;
-  /** Offset applied before measurements are included,
-      used for charts that don't start from birth.  */
-  offset: Period;
   /** Sex that this chart applies to. */
   sex: Sex;
+  /** Measurement represented by the chart. */
+  measurement: ChartMeasurement;
+  /** Whether the chart is neonatal or uses the monthly age scale. */
+  view: ChartView;
+  /** Maximum supported age of the monthly reference, in months. */
+  maxAgeMonths: number;
   /**Function to access the relevant data point from measurements. */
   accessorFn: (m: Measurement) => number | undefined;
 };
@@ -505,144 +592,148 @@ type Dict<V> = {
 const charts: Dict<ChartConfig> = {
   'who-wfa-boys-13-weeks': {
     label: 'Niños: peso para la edad: del nacimiento a las 13 semanas',
-    data: stretchGraph(whoWfaBoys13Weeks, 7),
+    data: whoWfaBoys13Weeks,
     options: options('semanas', 'kg'),
     axisYUnit: 'kg',
-    timeUnit: ChronoUnit.DAYS,
-    offset: Period.ZERO,
+    timeUnit: ChronoUnit.WEEKS,
     sex: 'male',
+    measurement: 'weight',
+    view: 'neonatal',
+    maxAgeMonths: 3,
     accessorFn: m => m.weight,
   },
   'who-wfa-girls-13-weeks': {
     label: 'Niñas: peso para la edad: del nacimiento a las 13 semanas',
-    data: stretchGraph(whoWfaGirls13Weeks, 7),
+    data: whoWfaGirls13Weeks,
     options: options('semanas', 'kg'),
     axisYUnit: 'kg',
-    timeUnit: ChronoUnit.DAYS,
-    offset: Period.ZERO,
+    timeUnit: ChronoUnit.WEEKS,
     sex: 'female',
+    measurement: 'weight',
+    view: 'neonatal',
+    maxAgeMonths: 3,
     accessorFn: m => m.weight,
   },
-  'who-wfa-boys-5-years': {
-    label: 'Niños: peso para la edad: del nacimiento a los 5 años',
-    data: whoWfaBoys5Years,
+  'who-wfa-boys-monthly': {
+    label: 'Niños: peso para la edad',
+    data: whoWfaBoysMonthly,
     options: options('meses', 'kg'),
     axisYUnit: 'kg',
     timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ZERO,
     sex: 'male',
+    measurement: 'weight',
+    view: 'monthly',
+    maxAgeMonths: 120,
     accessorFn: m => m.weight,
   },
-  'who-wfa-girls-5-years': {
-    label: 'Niñas: peso para la edad: del nacimiento a los 5 años',
-    data: whoWfaGirls5Years,
+  'who-wfa-girls-monthly': {
+    label: 'Niñas: peso para la edad',
+    data: whoWfaGirlsMonthly,
     options: options('meses', 'kg'),
     axisYUnit: 'kg',
     timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ZERO,
     sex: 'female',
+    measurement: 'weight',
+    view: 'monthly',
+    maxAgeMonths: 120,
     accessorFn: m => m.weight,
   },
   'who-hfa-boys-13-weeks': {
     label: 'Niños: longitud para la edad: del nacimiento a las 13 semanas',
-    data: stretchGraph(whoHfaBoys13Weeks, 7),
+    data: whoHfaBoys13Weeks,
     options: options('semanas', 'cm'),
     axisYUnit: 'cm',
-    timeUnit: ChronoUnit.DAYS,
-    offset: Period.ZERO,
+    timeUnit: ChronoUnit.WEEKS,
     sex: 'male',
+    measurement: 'length',
+    view: 'neonatal',
+    maxAgeMonths: 3,
     accessorFn: m => m.length,
   },
   'who-hfa-girls-13-weeks': {
     label: 'Niñas: longitud para la edad: del nacimiento a las 13 semanas',
-    data: stretchGraph(whoHfaGirls13Weeks, 7),
+    data: whoHfaGirls13Weeks,
     options: options('semanas', 'cm'),
     axisYUnit: 'cm',
-    timeUnit: ChronoUnit.DAYS,
-    offset: Period.ZERO,
+    timeUnit: ChronoUnit.WEEKS,
     sex: 'female',
+    measurement: 'length',
+    view: 'neonatal',
+    maxAgeMonths: 3,
     accessorFn: m => m.length,
   },
-  'who-hfa-boys-2-years': {
-    label: 'Niños: longitud para la edad: del nacimiento a los 2 años',
-    data: whoHfaBoys2Years,
+  'who-hfa-boys-monthly': {
+    label: 'Niños: longitud/talla para la edad',
+    data: whoHfaBoysMonthly,
     options: options('meses', 'cm'),
     axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ZERO,
     sex: 'male',
+    measurement: 'length',
+    view: 'monthly',
+    maxAgeMonths: 216,
     accessorFn: m => m.length,
   },
-  'who-hfa-girls-2-years': {
-    label: 'Niñas: longitud para la edad: del nacimiento a los 2 años',
-    data: whoHfaGirls2Years,
+  'who-hfa-girls-monthly': {
+    label: 'Niñas: longitud/talla para la edad',
+    data: whoHfaGirlsMonthly,
     options: options('meses', 'cm'),
     axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ZERO,
     sex: 'female',
-    accessorFn: m => m.length,
-  },
-  'who-hfa-boys-5-years': {
-    label: 'Niños: longitud para la edad: de 2 a 5 años',
-    data: whoHfaBoys5Years,
-    options: options('meses', 'cm'),
-    axisYUnit: 'cm',
-    timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ofYears(2),
-    sex: 'male',
-    accessorFn: m => m.length,
-  },
-  'who-hfa-girls-5-years': {
-    label: 'Niñas: longitud para la edad: de 2 a 5 años',
-    data: whoHfaGirls5Years,
-    options: options('meses', 'cm'),
-    axisYUnit: 'cm',
-    timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ofYears(2),
-    sex: 'female',
+    measurement: 'length',
+    view: 'monthly',
+    maxAgeMonths: 216,
     accessorFn: m => m.length,
   },
   'who-hcfa-boys-13-weeks': {
     label:
       'Niños: perímetro craneal para la edad: del nacimiento a las 13 semanas',
-    data: stretchGraph(whoHcfaBoys13Weeks, 7),
+    data: whoHcfaBoys13Weeks,
     options: options('semanas', 'cm'),
     axisYUnit: 'cm',
-    timeUnit: ChronoUnit.DAYS,
-    offset: Period.ZERO,
+    timeUnit: ChronoUnit.WEEKS,
     sex: 'male',
+    measurement: 'head',
+    view: 'neonatal',
+    maxAgeMonths: 3,
     accessorFn: m => m.head,
   },
   'who-hcfa-girls-13-weeks': {
     label:
       'Niñas: perímetro craneal para la edad: del nacimiento a las 13 semanas',
-    data: stretchGraph(whoHcfaGirls13Weeks, 7),
+    data: whoHcfaGirls13Weeks,
     options: options('semanas', 'cm'),
     axisYUnit: 'cm',
-    timeUnit: ChronoUnit.DAYS,
-    offset: Period.ZERO,
+    timeUnit: ChronoUnit.WEEKS,
     sex: 'female',
+    measurement: 'head',
+    view: 'neonatal',
+    maxAgeMonths: 3,
     accessorFn: m => m.head,
   },
-  'who-hcfa-boys-5-years': {
-    label: 'Niños: perímetro craneal para la edad: del nacimiento a los 5 años',
-    data: whoHcfaBoys5Years,
+  'who-hcfa-boys-monthly': {
+    label: 'Niños: perímetro craneal para la edad',
+    data: whoHcfaBoysMonthly,
     options: options('meses', 'cm'),
     axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ZERO,
     sex: 'male',
+    measurement: 'head',
+    view: 'monthly',
+    maxAgeMonths: 60,
     accessorFn: m => m.head,
   },
-  'who-hcfa-girls-5-years': {
-    label: 'Niñas: perímetro craneal para la edad: del nacimiento a los 5 años',
-    data: whoHcfaGirls5Years,
+  'who-hcfa-girls-monthly': {
+    label: 'Niñas: perímetro craneal para la edad',
+    data: whoHcfaGirlsMonthly,
     options: options('meses', 'cm'),
     axisYUnit: 'cm',
     timeUnit: ChronoUnit.MONTHS,
-    offset: Period.ZERO,
     sex: 'female',
+    measurement: 'head',
+    view: 'monthly',
+    maxAgeMonths: 60,
     accessorFn: m => m.head,
   },
 };

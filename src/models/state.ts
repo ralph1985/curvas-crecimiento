@@ -2,7 +2,13 @@ import {LocalDate} from '@js-joda/core';
 import type {SeriesObject} from 'chartist';
 
 import charts, {type ChartConfig} from '../data/who';
-import {nextColour} from './constants';
+import {
+  type BackupReminderState,
+  createBackupReminderState,
+  recordBackupExport,
+} from './backup-reminder';
+import {saveChartSelection} from './chart-selection';
+import {nextChildId, nextColour} from './constants';
 
 // State and actions definitions
 type MitosisAttr<S, A> = {
@@ -15,6 +21,7 @@ interface App {
   section: AppSection;
   children: Child[];
   chart: Chart;
+  backupReminder: BackupReminderState;
 }
 
 type AppSection = 'children' | 'chart';
@@ -23,12 +30,14 @@ const AppState = (): App => ({
   section: 'children',
   children: [ChildState()],
   chart: ChartState(),
+  backupReminder: createBackupReminderState(),
 });
 
 interface IAppActions {
   addChild(child?: Child): void;
   removeChild(idx: number): void;
   setSection(section: AppSection): void;
+  recordBackupExport(timestamp?: string): void;
 
   import(state: Child[]): void;
 }
@@ -44,9 +53,17 @@ const AppActions = (app: App): IAppActions => ({
   },
   removeChild: (idx: number) => {
     app.children.splice(idx, 1);
+    const childIds = new Set(app.children.map(child => child.id));
+    app.chart.selectedChildIds = app.chart.selectedChildIds.filter(id =>
+      childIds.has(id),
+    );
+    saveChartSelection(app.chart.selectedChildIds);
   },
   setSection: section => {
     app.section = section;
+  },
+  recordBackupExport: (timestamp = new Date().toISOString()) => {
+    app.backupReminder = recordBackupExport(app.backupReminder, timestamp);
   },
   import: children => {
     app.children = children;
@@ -116,6 +133,7 @@ type Sex = 'female' | 'male';
 
 // Child
 interface Child {
+  id: string;
   idx: number;
   name: string | null;
   dateOfBirth?: LocalDate;
@@ -138,6 +156,7 @@ interface IChildActions {
 }
 
 const ChildState = (siblingColours: (string | undefined)[] = []): Child => ({
+  id: nextChildId(),
   idx: 0,
   open: true,
   name: null,
@@ -229,16 +248,21 @@ interface Chart {
   name: string;
   config?: ChartConfig;
   data: SeriesObject[];
+  selectedChildIds: string[];
+  selectionInitialized: boolean;
 }
 
 interface IChartActions {
   loadChart(name: string, maxAgeMonths?: number): void;
+  setSelectedChildIds(ids: string[]): void;
 }
 
 const ChartState = (): Chart => ({
-  name: 'who-wfa-girls-13-weeks',
+  name: 'who-wfa-girls-monthly',
   config: undefined,
   data: [],
+  selectedChildIds: [],
+  selectionInitialized: false,
 });
 
 const ChartActions = (chart: Chart): IChartActions => ({
@@ -246,27 +270,28 @@ const ChartActions = (chart: Chart): IChartActions => ({
     const config = charts[name];
     if (config) {
       chart.name = name;
-      chart.config = maxAgeMonths
-        ? {
-            ...config,
-            data: sliceChartData(
-              config.data,
-              config.offset.toTotalMonths(),
-              maxAgeMonths,
-            ),
-          }
-        : config;
+      chart.config =
+        config.view === 'monthly' && maxAgeMonths !== undefined
+          ? {
+              ...config,
+              data: sliceChartData(config.data, maxAgeMonths),
+            }
+          : config;
     }
     console.log('Gráfico cargado: ', name);
+  },
+  setSelectedChildIds: ids => {
+    chart.selectedChildIds = [...new Set(ids)];
+    chart.selectionInitialized = true;
+    saveChartSelection(chart.selectedChildIds);
   },
 });
 
 function sliceChartData(
   data: ChartConfig['data'],
-  startAgeMonths: number,
   maxAgeMonths: number,
 ): ChartConfig['data'] {
-  const pointCount = Math.max(1, maxAgeMonths - startAgeMonths + 1);
+  const pointCount = Math.max(1, maxAgeMonths + 1);
   return {
     labels: data.labels?.slice(0, pointCount),
     series: data.series.map(series =>

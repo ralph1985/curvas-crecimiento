@@ -30,6 +30,7 @@ const DataManagementComponent: m.Component<MitosisAttr<App, IAppActions>> = {
             id: 'export',
             href: stateUrl,
             download: 'datos-crecimiento.json',
+            onclick: () => actions.recordBackupExport(),
           },
           'Exportar datos',
         ),
