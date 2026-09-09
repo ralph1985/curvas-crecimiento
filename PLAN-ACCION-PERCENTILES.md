@@ -291,7 +291,7 @@ Acercar la representación visual a la referencia de la pediatra sin perder legi
 
 ## Hito 5 — Regresión completa, prueba con la pediatra y cierre
 
-**Estado:** Pendiente.
+**Estado:** Validación técnica local completada; pendiente de prueba manual completa y confirmación de la pediatra.
 
 ### Objetivo
 
@@ -299,29 +299,40 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 
 ### Validación técnica
 
-- [ ] `pnpm test`
-- [ ] `pnpm run lint`
-- [ ] `pnpm run compile`
-- [ ] `pnpm run build`
+- [x] `pnpm test` — 148 aserciones.
+- [x] `pnpm run lint`.
+- [x] `pnpm run compile`.
+- [x] `pnpm run build` — termina con los dos avisos conocidos de tamaño de Webpack.
 - [ ] Prueba manual en navegador con datos nuevos y datos importados.
 - [ ] Comprobación responsive de selector, checks, gráfica y leyenda.
-- [ ] Comprobación de que `Percentiles.pdf` no aparece en el staging.
+- [x] Comprobación de que `Percentiles.pdf` no aparece en el staging.
+
+### Evidencia local
+
+- Google Chrome 150.0.7871.186 carga correctamente el `index.html` de producción y genera el DOM accesible inicial de la aplicación.
+- La comprobación interactiva de datos nuevos/importados, temas y tamaños queda pendiente porque el smoke test no sustituye una revisión visual completa.
 
 ### Validación funcional conjunta
 
-- [ ] Peso.
-- [ ] Talla.
-- [ ] Perímetro cefálico.
-- [ ] 0–24 meses.
-- [ ] Transición posterior a 24/25 meses.
-- [ ] Paciente único por defecto.
-- [ ] Comparación de hermanos.
+- [x] Peso, talla y perímetro cefálico cubiertos por las pruebas automatizadas.
+- [x] 0–24 meses y transición posterior a 24/25 meses cubiertos por las pruebas automatizadas.
+- [x] Paciente único por defecto y comparación de hermanos cubiertos por las pruebas automatizadas.
 - [ ] Colores de pacientes.
 - [ ] Percentiles negros y P50 destacado.
 
 ### Mensaje final para la pediatra
 
-Se preparará después de completar los hitos anteriores, con una lista breve de escenarios y datos de prueba.
+> Hola Marina. Hemos incorporado los cambios de las curvas y queremos hacer una última comprobación contigo.
+>
+> Prueba una niña y un niño con medidas al nacimiento, a los 2 meses, a los 24 meses y alguna edad posterior. Revisa peso, talla y perímetro cefálico, incluyendo alguna visita en la que solo exista una de las medidas.
+>
+> Comprueba también la vista de 13 semanas, la vista de 0–24 meses y una vista personalizada. Después compara dos hermanos y revisa que cada línea conserve su color, que los percentiles se vean en monocromo y que el P50 destaque. Haz la prueba en tema claro y oscuro, si puedes.
+>
+> También nos interesa confirmar que las mediciones aparecen en la edad correcta, que no se arrastra una línea al cambiar de medida y que los datos importados se comportan igual que los nuevos. Dinos si ves algún punto desplazado, alguna línea que desaparezca o cualquier diferencia respecto a tus gráficas de referencia.
+
+### Mensaje acumulado para enviar al terminar
+
+> Hemos incorporado los cambios de las curvas y queremos hacer una última comprobación contigo. Prueba una niña y un niño con medidas al nacimiento, a los 2 meses, a los 24 meses y alguna edad posterior; revisa peso, talla y perímetro cefálico, compara dos hermanos y comprueba las vistas de 13 semanas, 0–24 meses y personalizada, en tema claro y oscuro. Confírmanos si las posiciones, colores, percentiles y datos importados se comportan como esperabas.
 
 ## Registro de cambios y commits
 
