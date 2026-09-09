@@ -291,7 +291,7 @@ Acercar la representación visual a la referencia de la pediatra sin perder legi
 
 ## Hito 5 — Regresión completa, prueba con la pediatra y cierre
 
-**Estado:** Validación técnica local completada; pendiente de prueba manual completa y confirmación de la pediatra.
+**Estado:** Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra.
 
 ### Objetivo
 
@@ -306,6 +306,14 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 - [ ] Prueba manual en navegador con datos nuevos y datos importados.
 - [ ] Comprobación responsive de selector, checks, gráfica y leyenda.
 - [x] Comprobación de que `Percentiles.pdf` no aparece en el staging.
+
+### Entorno de pruebas aislado
+
+- Rama de pruebas: `develop` en GitHub, apuntando a `4e08fcd`.
+- Preview estable: <https://curvas-crecimiento-git-develop-rafaels-projects-bc09f70a.vercel.app>.
+- Despliegue verificado: `dpl_94t2QaK4rMYhxjNsfigECPV4jAsD`, estado `Ready`, entorno `Preview`.
+- Vercel está conectado a `ralph1985/curvas-crecimiento`, mantiene `main` como `productionBranch`, usa Node `22.x`, `pnpm run build` y `build/dist`.
+- `.vercelignore` excluye `Percentiles.pdf` del contexto de despliegue.
 
 ### Evidencia local
 
@@ -322,7 +330,7 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 
 ### Mensaje final para la pediatra
 
-> Hola Marina. Hemos incorporado los cambios de las curvas y queremos hacer una última comprobación contigo.
+> Hola Marina. Hemos incorporado los cambios de las curvas y queremos hacer una última comprobación contigo. Puedes probarlos en esta dirección: https://curvas-crecimiento-git-develop-rafaels-projects-bc09f70a.vercel.app
 >
 > Prueba una niña y un niño con medidas al nacimiento, a los 2 meses, a los 24 meses y alguna edad posterior. Revisa peso, talla y perímetro cefálico, incluyendo alguna visita en la que solo exista una de las medidas.
 >
@@ -343,4 +351,4 @@ Verificar que las mejoras funcionan juntas y entregar una prueba controlada a la
 | 2026-09-09 | Hito 2 | `bc40cfb`, `24d0715` | 134 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 3 | `bfb8c34`, `b2f21a9` | 145 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación externa |
 | 2026-09-09 | Hito 4 | `2daaaab`, `660cbd9` | 148 aserciones, lint, compile y build verificados; `Percentiles.pdf` excluido | Implementado localmente; pendiente de validación visual y externa |
-| 2026-09-09 | Hito 5 | `5bda26d` | 148 aserciones, lint, compile, build y smoke test de Chrome verificados; `Percentiles.pdf` excluido | Validación técnica local completada; pendiente de prueba manual completa y confirmación de la pediatra |
+| 2026-09-09 | Hito 5 | `5bda26d`, `4e08fcd` | 148 aserciones, lint, compile, build, smoke test de Chrome y Preview Vercel Ready verificados; `Percentiles.pdf` excluido | Preview aislado preparado; pendiente de prueba manual completa y confirmación de la pediatra |
